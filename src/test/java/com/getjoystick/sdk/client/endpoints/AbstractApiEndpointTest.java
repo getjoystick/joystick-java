@@ -108,7 +108,7 @@ class AbstractApiEndpointTest {
         response.setEntity(HttpEntities.create("{\"data\":{\"hello\":\"world\"},\"hash\":\"dbf261eb\",\"meta\":" +
             "{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}"));
         final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"));
-        JsonNode jsonNode = apiEndpoint.processResponse(response, false);
+        JsonNode jsonNode = apiEndpoint.processResponse(response);
         assertEquals("{\"hello\":\"world\"}", jsonNode.toString());
     }
 
@@ -118,7 +118,7 @@ class AbstractApiEndpointTest {
         response.setEntity(HttpEntities.create("{\"data\":\"{\\\"hello\\\":\\\"world\\\"}\",\"hash\":\"dbf261eb\"," +
             "\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}"));
         final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"));
-        JsonNode jsonNode = apiEndpoint.processResponse(response, false);
+        JsonNode jsonNode = apiEndpoint.processResponse(response);
         assertEquals("\"{\\\"hello\\\":\\\"world\\\"}\"", jsonNode.toString());
     }
 
@@ -127,8 +127,8 @@ class AbstractApiEndpointTest {
         ClassicHttpResponse response = new BasicClassicHttpResponse(200);
         response.setEntity(HttpEntities.create("{\"data\":{\"hello\":\"world\"},\"hash\":\"dbf261eb\",\"meta\":" +
             "{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}"));
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"));
-        JsonNode jsonNode = apiEndpoint.processResponse(response, true);
+        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"), false, true);
+        JsonNode jsonNode = apiEndpoint.processResponse(response);
         assertEquals("{\"data\":{\"hello\":\"world\"},\"hash\":\"dbf261eb\"," +
             "\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}", jsonNode.toString());
     }
@@ -138,8 +138,9 @@ class AbstractApiEndpointTest {
         ClassicHttpResponse response = new BasicClassicHttpResponse(200);
         response.setEntity(HttpEntities.create("{\"data\":\"{\\\"hello\\\":\\\"world\\\"}\",\"hash\":\"dbf261eb\"," +
             "\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}"));
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"));
-        JsonNode jsonNode = apiEndpoint.processResponse(response, true);
+        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"),
+            false, true);
+        JsonNode jsonNode = apiEndpoint.processResponse(response);
         assertEquals("{\"data\":\"{\\\"hello\\\":\\\"world\\\"}\",\"hash\":\"dbf261eb\"," +
             "\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}", jsonNode.toString());
     }
@@ -150,7 +151,7 @@ class AbstractApiEndpointTest {
         response.setEntity(HttpEntities.create("{\"data\":,,,{} some invalid Json}}"));
         final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"));
         final ApiUnknownException error = assertThrows(ApiUnknownException.class,
-            () -> apiEndpoint.processResponse(response, false));
+            () -> apiEndpoint.processResponse(response));
         assertEquals( "Response is not in JSON format", error.getMessage());
     }
 

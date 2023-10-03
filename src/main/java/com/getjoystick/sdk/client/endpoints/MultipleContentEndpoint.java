@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ConfigurationException;
 import com.getjoystick.sdk.errors.MultipleContentsApiException;
+import com.getjoystick.sdk.util.ApiCacheKeyUtil;
 import lombok.Builder;
 import lombok.NonNull;
 import org.apache.hc.core5.http.NameValuePair;
@@ -26,6 +28,7 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
 
     private Collection<String> contentIds;
     private boolean serialized;
+    private boolean fullResponse;
 
     @Override
     public String getUrl() {
@@ -48,12 +51,19 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
     }
 
     /**
-     * @param jsonNode
-     * @param fullResponse
      * @return
      */
     @Override
-    public JsonNode formatJsonResponse(final JsonNode jsonNode, final boolean fullResponse) {
+    public String getContentHash(final ClientConfig config) {
+        return ApiCacheKeyUtil.getHash(config, contentIds, serialized, fullResponse);
+    }
+
+    /**
+     * @param jsonNode
+     * @return
+     */
+    @Override
+    public JsonNode formatJsonResponse(final JsonNode jsonNode) {
         validateResponse(jsonNode);
         return fullResponse ? jsonNode : extractDataNodesOnly(jsonNode);
     }

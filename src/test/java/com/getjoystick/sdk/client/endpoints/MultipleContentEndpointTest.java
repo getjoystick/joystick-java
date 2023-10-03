@@ -101,9 +101,10 @@ class MultipleContentEndpointTest {
 
         MultipleContentEndpoint multipleContent = MultipleContentEndpoint.builder()
             .setContentIds(ImmutableSet.of("id1", "id2"))
+            .setFullResponse(true)
             .build();
 
-        final JsonNode result = multipleContent.formatJsonResponse(jsonNode, true);
+        final JsonNode result = multipleContent.formatJsonResponse(jsonNode);
         assertEquals(jsonNode, result);
     }
 
@@ -115,11 +116,12 @@ class MultipleContentEndpointTest {
 
         MultipleContentEndpoint multipleContent = MultipleContentEndpoint.builder()
             .setContentIds(ImmutableSet.of("id1", "id2"))
+            .setFullResponse(true)
             .build();
 
         final JsonNode resultErrorNode = OBJECT_MAPPER.readTree("{\"dev_test_002\":\"Some error occurred\"}");
         final MultipleContentsApiException error = assertThrows(MultipleContentsApiException.class,
-            () -> multipleContent.formatJsonResponse(jsonNode, true));
+            () -> multipleContent.formatJsonResponse(jsonNode));
         assertEquals( "Response from remote server contains errors:"
             + System.lineSeparator() + resultErrorNode.toPrettyString(), error.getMessage());
     }
@@ -133,9 +135,10 @@ class MultipleContentEndpointTest {
 
         MultipleContentEndpoint multipleContent = MultipleContentEndpoint.builder()
             .setContentIds(ImmutableSet.of("id1", "id2"))
+            .setFullResponse(false)
             .build();
 
-        final JsonNode result = multipleContent.formatJsonResponse(jsonNode, false);
+        final JsonNode result = multipleContent.formatJsonResponse(jsonNode);
         assertEquals("{\"dev_test_001\":{\"config_name\":\"initial-test-config-dev-001\"}," +
             "\"dev_test_002\":{\"config_name\":\"initial-test-config-dev-002\"}}", result.toString());
     }
@@ -152,7 +155,7 @@ class MultipleContentEndpointTest {
 
         final JsonNode resultErrorNode = OBJECT_MAPPER.readTree("{\"dev_test_002\":\"Some error occurred\"}");
         final MultipleContentsApiException error = assertThrows(MultipleContentsApiException.class,
-            () -> multipleContent.formatJsonResponse(jsonNode, false));
+            () -> multipleContent.formatJsonResponse(jsonNode));
         assertEquals( "Response from remote server contains errors:"
             + System.lineSeparator() + resultErrorNode.toPrettyString(), error.getMessage());
     }

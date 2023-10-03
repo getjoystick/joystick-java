@@ -21,9 +21,14 @@ public final class ApiCacheKeyUtil {
      * @param fullResponse
      * @return
      */
-    public static String getHash(
-        final ClientConfig config, final Collection<String> contentIds, final boolean serialized, final boolean fullResponse
-    ) {
+    public static String getHash(final ClientConfig config, final Collection<String> contentIds,
+                                 final boolean serialized, final boolean fullResponse) {
+        final String contentIdsString = contentIds.stream().sorted().collect(Collectors.joining());
+        return getHash(config, contentIdsString, serialized, fullResponse);
+    }
+
+    public static String getHash(final ClientConfig config, final String contentIdsString,
+                                 final boolean serialized, final boolean fullResponse) {
         final String key = config.getApiKey();
         final Map<Object, Object> props = new TreeMap<>(config.getParams());
         final String propsKey = props.entrySet().stream()
@@ -31,7 +36,6 @@ public final class ApiCacheKeyUtil {
             .collect(Collectors.joining());
         final String semVer = config.getSemVer();
         final String userId = config.getUserId();
-        final String contentIdsString = contentIds.stream().sorted().collect(Collectors.joining());
         final String hashString = key + propsKey + semVer + userId + contentIdsString + serialized + fullResponse;
         return Hashing.sha256().hashString(hashString, StandardCharsets.UTF_8).toString();
     }

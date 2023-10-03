@@ -14,3 +14,6 @@ ij_java_blank_lines_after_class_header = 1
 ij_java_blank_lines_before_class_end = 1
 ij_java_names_count_to_use_import_on_demand = 999
 ij_java_class_count_to_use_import_on_demand = 999
+
+[*.yml]
+indent_size = 2

@@ -46,7 +46,7 @@ class ClientImplTest {
             doReturn(node).when(httpClient)
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
             final String result = new ClientImpl(ClientConfig.builder().setApiKey(API_KEY).build())
-                .getContents(ImmutableSet.of("id1"));
+                .getContentsAsString(ImmutableSet.of("id1"));
             assertEquals(response, result);
         }
     }
@@ -67,7 +67,7 @@ class ClientImplTest {
 
             final ApiUnknownException error = assertThrows(ApiUnknownException.class,
                 () -> new ClientImpl(ClientConfig.builder().setApiKey(API_KEY).build())
-                    .getContents(ImmutableSet.of("id1")));
+                    .getContentsAsString(ImmutableSet.of("id1")));
             assertEquals( "Unable to complete the request", error.getMessage());
         }
     }
@@ -86,7 +86,7 @@ class ClientImplTest {
             final ApiCache<String, String> cache = new ApiCacheLRU<>();
             cache.put("3630fd3bcb14a8b6c28d1b37a04cf09c84c404508459137f09e489db252a6f77", response);
             final ClientConfig clientConfig = ClientConfig.builder().setApiKey(API_KEY).setCache(cache).build();
-            final String result = new ClientImpl(clientConfig).getContents(ImmutableSet.of("id1"));
+            final String result = new ClientImpl(clientConfig).getContentsAsString(ImmutableSet.of("id1"));
             assertEquals(response, result);
         }
     }
@@ -110,7 +110,7 @@ class ClientImplTest {
             doReturn(node).when(httpClient)
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
             final String result = new ClientImpl(ClientConfig.builder().setApiKey(API_KEY).build())
-                .getContents(ImmutableSet.of("id1","id2"));
+                .getContentsAsString(ImmutableSet.of("id1","id2"));
             assertEquals(response, result);
         }
     }
@@ -119,7 +119,7 @@ class ClientImplTest {
     void getContents_emptyIdsAsParam_exceptionIsThrown() {
         final IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
             () -> new ClientImpl(ClientConfig.builder().setApiKey(API_KEY).build())
-                .getContents(ImmutableSet.of()));
+                .getContentsAsString(ImmutableSet.of()));
         assertEquals( "No Content ID provided.", error.getMessage());
     }
 

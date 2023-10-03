@@ -7,7 +7,7 @@ import com.getjoystick.sdk.client.impl.ClientImpl;
 /**
  * Main SDK class.
  */
-public final class GetJoystick {
+public final class Joystick {
 
     /**
      * Create new instance of Joystick Client
@@ -19,7 +19,7 @@ public final class GetJoystick {
         return new ClientImpl(config);
     }
 
-    GetJoystick() {
+    Joystick() {
         throw new UnsupportedOperationException("Unable to instantiate a Base SDK class.");
     }
 

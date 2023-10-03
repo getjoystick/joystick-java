@@ -1,7 +1,9 @@
 package com.getjoystick.sdk.client.endpoints;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ConfigurationException;
+import com.getjoystick.sdk.util.ApiCacheKeyUtil;
 import lombok.Builder;
 import lombok.NonNull;
 import org.apache.hc.core5.http.NameValuePair;
@@ -17,10 +19,19 @@ public class SingleContentEndpoint extends AbstractApiEndpoint {
 
     private String contentId;
     private boolean serialized;
+    private boolean fullResponse;
 
     @Override
     public String getUrl() {
         return String.format(SINGLE_CONFIG_URL, contentId);
+    }
+
+    /**
+     * @return
+     */
+    @Override
+    public String getContentHash(final ClientConfig config) {
+        return ApiCacheKeyUtil.getHash(config, contentId, serialized, fullResponse);
     }
 
     @Override
@@ -34,11 +45,10 @@ public class SingleContentEndpoint extends AbstractApiEndpoint {
 
     /**
      * @param jsonNode
-     * @param fullResponse
      * @return
      */
     @Override
-    public JsonNode formatJsonResponse(final JsonNode jsonNode, final boolean fullResponse) {
+    public JsonNode formatJsonResponse(final JsonNode jsonNode) {
         return fullResponse ? jsonNode : jsonNode.findValue(NODE_DATA);
     }
 

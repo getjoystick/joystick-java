@@ -1,6 +1,7 @@
 package com.getjoystick.sdk.client.endpoints;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -10,6 +11,7 @@ import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ApiBadRequestException;
 import com.getjoystick.sdk.errors.ApiServerException;
 import com.getjoystick.sdk.errors.ApiUnknownException;
+import com.getjoystick.sdk.errors.JoystickException;
 import com.getjoystick.sdk.models.RequestBody;
 import lombok.NonNull;
 import org.apache.hc.core5.http.*;
@@ -43,6 +45,8 @@ public abstract class AbstractApiEndpoint {
      */
     public abstract String getUrl();
 
+    public abstract String getContentHash(ClientConfig config);
+
     /**
      * Provide query parameters for request
      *
@@ -51,7 +55,23 @@ public abstract class AbstractApiEndpoint {
     @NonNull
     public abstract NameValuePair[] getQueryParameters();
 
-    public abstract JsonNode formatJsonResponse(JsonNode response, boolean fullResponse);
+    public abstract JsonNode formatJsonResponse(JsonNode response);
+
+    public <T> T toObject(String content, Class<T> clazz) {
+        try {
+            return OBJECT_MAPPER.readValue(content, clazz);
+        } catch (JsonProcessingException e) {
+            throw new JoystickException("Unable to convert Joystick response to " + clazz, e);
+        }
+    }
+
+    public <T> T toObject(JsonNode content, Class<T> clazz) {
+        try {
+            return OBJECT_MAPPER.treeToValue(content, clazz);
+        } catch (JsonProcessingException e) {
+            throw new JoystickException("Unable to convert Joystick response to " + clazz, e);
+        }
+    }
 
 
     public JsonNode parseResponseToJson(final ClassicHttpResponse response) throws IOException {
@@ -100,10 +120,10 @@ public abstract class AbstractApiEndpoint {
         }, ContentType.APPLICATION_JSON);
     }
 
-    public JsonNode processResponse(final ClassicHttpResponse response, final  boolean fullResponse) throws IOException {
+    public JsonNode processResponse(final ClassicHttpResponse response) throws IOException {
         processCommonResponseErrors(response);
         final JsonNode jsonResponse =  parseResponseToJson(response);
-        return formatJsonResponse(jsonResponse, fullResponse);
+        return formatJsonResponse(jsonResponse);
     }
 
     public void processCommonResponseErrors (final ClassicHttpResponse response) {
