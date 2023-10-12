@@ -38,6 +38,8 @@ public abstract class AbstractApiEndpoint {
             .build();
     }
 
+    protected ClientConfig config;
+
     /**
      * Provides REST API endpoint URL.
      *
@@ -109,7 +111,7 @@ public abstract class AbstractApiEndpoint {
         return bodyBuilder.build();
     }
 
-    public HttpEntity prepareRequestEntity(final ClientConfig config) {
+    public HttpEntity prepareRequestEntity() {
         return HttpEntities.create(outputStream -> {
             OBJECT_MAPPER.writeValue(outputStream,
                 getRequestBody(

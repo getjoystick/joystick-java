@@ -6,12 +6,14 @@ import com.getjoystick.sdk.client.Client;
 import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.client.endpoints.AbstractApiEndpoint;
 import com.getjoystick.sdk.client.endpoints.ApiEndpointFactory;
+import com.getjoystick.sdk.client.endpoints.PublishUpdateEndpoint;
 import com.getjoystick.sdk.client.endpoints.MultipleContentEndpoint;
 import com.getjoystick.sdk.client.endpoints.SingleContentEndpoint;
 import com.getjoystick.sdk.errors.ApiUnknownException;
 import com.getjoystick.sdk.models.JoystickData;
 import com.getjoystick.sdk.models.JoystickFullContent;
 import com.getjoystick.sdk.models.JoystickFullContentJson;
+import com.getjoystick.sdk.models.PublishData;
 import com.getjoystick.sdk.models.ResponseType;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -166,7 +168,7 @@ public class ClientImpl implements Client {
      */
     @Override
     public <T> T getContent(String contentId, Class<T> clazz, boolean refresh) {
-        final AbstractApiEndpoint singleEndpoint = SingleContentEndpoint.builder().setContentId(contentId).build();
+        final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId);
         final String singleContent =  getContentsAsString(singleEndpoint, refresh);
         return singleEndpoint.toObject(singleContent, clazz);
     }
@@ -180,9 +182,7 @@ public class ClientImpl implements Client {
      */
     @Override
     public String getContentSerialized(String contentId, boolean refresh) {
-        final AbstractApiEndpoint singleEndpoint = SingleContentEndpoint.builder()
-            .setContentId(contentId)
-            .setSerialized(true).build();
+        final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId).setSerialized(true);
         return getContentsAsString(singleEndpoint, refresh);
     }
 
@@ -196,10 +196,8 @@ public class ClientImpl implements Client {
      */
     @Override
     public <T> JoystickFullContent<T> getFullContent(String contentId, Class<T> clazz, boolean refresh) {
-        final AbstractApiEndpoint singleEndpoint = SingleContentEndpoint.builder()
-            .setContentId(contentId)
-            .setFullResponse(true)
-            .build();
+        final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId)
+            .setFullResponse(true);
         final String content =  getContentsAsString(singleEndpoint, refresh);
         final JoystickFullContentJson rawObject = singleEndpoint.toObject(content, JoystickFullContentJson.class);
         return new JoystickFullContent<>(singleEndpoint.toObject(rawObject.getData(), clazz),
@@ -215,11 +213,9 @@ public class ClientImpl implements Client {
      */
     @Override
     public JoystickFullContent<String> getFullContentSerialized(String contentId, boolean refresh) {
-        final AbstractApiEndpoint singleEndpoint = SingleContentEndpoint.builder()
-            .setContentId(contentId)
+        final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId)
             .setSerialized(true)
-            .setFullResponse(true)
-            .build();
+            .setFullResponse(true);
         final String content =  getContentsAsString(singleEndpoint,  refresh);
         final JoystickFullContentJson rawObject = singleEndpoint.toObject(content, JoystickFullContentJson.class);
         return new JoystickFullContent<>(rawObject.getData().toString(),
@@ -235,7 +231,7 @@ public class ClientImpl implements Client {
      */
     @Override
     public Map<String, JoystickData> getContents(Collection<String> contentIds, boolean refresh) {
-        final AbstractApiEndpoint multiEndpoint = MultipleContentEndpoint.builder().setContentIds(contentIds).build();
+        final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds);
         final String content =  getContentsAsString(multiEndpoint, refresh);
         final JsonNode jsonNode = multiEndpoint.toObject(content, JsonNode.class);
         final Map<String, JoystickData> contentMap = new HashMap<>();
@@ -254,9 +250,8 @@ public class ClientImpl implements Client {
      */
     @Override
     public Map<String, String> getContentsSerialized(Collection<String> contentIds, boolean refresh) {
-        final AbstractApiEndpoint multiEndpoint = MultipleContentEndpoint.builder()
-            .setContentIds(contentIds)
-            .setSerialized(true).build();
+        final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds)
+            .setSerialized(true);
         final String content =  getContentsAsString(multiEndpoint, refresh);
         final JsonNode jsonNode = multiEndpoint.toObject(content, JsonNode.class);
         final Map<String, String> contentMap = new HashMap<>();
@@ -276,8 +271,8 @@ public class ClientImpl implements Client {
      */
     @Override
     public Map<String, JoystickFullContentJson> getFullContents(Collection<String> contentIds, boolean refresh) {
-        final AbstractApiEndpoint multiEndpoint = MultipleContentEndpoint.builder()
-            .setContentIds(contentIds).build();
+        final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds)
+            .setFullResponse(true);
         final String content =  getContentsAsString(multiEndpoint, refresh);
         final JsonNode jsonNode = multiEndpoint.toObject(content, JsonNode.class);
         final Map<String, JoystickFullContentJson> contentMap = new HashMap<>();
@@ -297,11 +292,9 @@ public class ClientImpl implements Client {
      */
     @Override
     public Map<String, JoystickFullContent<String>> getFullContentsSerialized(Collection<String> contentIds, boolean refresh) {
-        final AbstractApiEndpoint multiEndpoint = MultipleContentEndpoint.builder()
-            .setContentIds(contentIds)
+        final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds)
             .setSerialized(true)
-            .setFullResponse(true)
-            .build();
+            .setFullResponse(true);
         final String content =  getContentsAsString(multiEndpoint, refresh);
         final JsonNode jsonNode = multiEndpoint.toObject(content, JsonNode.class);
         final Map<String, JoystickFullContent<String>> contentMap = new HashMap<>();
@@ -325,7 +318,6 @@ public class ClientImpl implements Client {
         return getContentsAsString(contentIds, null);
     }
 
-
     @Override
     public String getContentsAsString(final Collection<String> contentIds, final ResponseType responseType) {
         return getContentsAsString(contentIds, responseType, false);
@@ -344,7 +336,7 @@ public class ClientImpl implements Client {
     public String getContentsAsString(final Collection<String> contentIds, final ResponseType responseType,
                                       final boolean fullResponse, final boolean refresh) {
         final boolean isSerialized = responseType == ResponseType.SERIALIZED || config.isSerialized();
-        final AbstractApiEndpoint contentEndpoint = ApiEndpointFactory.build(contentIds, isSerialized, fullResponse);
+        final AbstractApiEndpoint contentEndpoint = ApiEndpointFactory.build(config, contentIds, isSerialized, fullResponse);
         return getContentsAsString(contentEndpoint, refresh);
     }
 
@@ -356,7 +348,7 @@ public class ClientImpl implements Client {
         }
 
         final ClassicHttpRequest httpPost = ClassicRequestBuilder.post(contentEndpoint.getUrl())
-            .setEntity(contentEndpoint.prepareRequestEntity(config))
+            .setEntity(contentEndpoint.prepareRequestEntity())
             .addParameters(contentEndpoint.getQueryParameters())
             .build();
 
@@ -371,6 +363,29 @@ public class ClientImpl implements Client {
             cache.put(hash, contents);
         }
         return contents;
+    }
+
+    /**
+     * Publish update for already existing content in Joystick
+     *
+     * @param contentId id of existing content
+     * @param data includes data to be updated in Joystick
+     */
+    @Override
+    public void publishContentUpdate(String contentId, PublishData data) {
+        if (contentId == null || contentId.trim().isEmpty()) {
+            throw new IllegalArgumentException("No Content ID provided.");
+        }
+        final AbstractApiEndpoint endpoint = new PublishUpdateEndpoint(data, contentId);
+        final ClassicHttpRequest httpPut = ClassicRequestBuilder.put(endpoint.getUrl())
+            .setEntity(endpoint.prepareRequestEntity())
+            .addParameters(endpoint.getQueryParameters())
+            .build();
+        try {
+            client.execute(httpPut, endpoint::processResponse);
+        } catch (IOException e) {
+            throw new ApiUnknownException("Unable to complete the request", e);
+        }
     }
 
     /**

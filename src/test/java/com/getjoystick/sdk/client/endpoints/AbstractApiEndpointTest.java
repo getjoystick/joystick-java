@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class AbstractApiEndpointTest {
 
     private static final String API_KEY = "test-api-key";
+    private static final ClientConfig CONFIG = ClientConfig.builder().setApiKey(API_KEY).build();
+
 
     private static final ObjectMapper OBJECT_MAPPER;
 
@@ -38,10 +40,9 @@ class AbstractApiEndpointTest {
     }
 
     @Test
-    void prepareRequestEntity_singleContentIdNoParams_ddefaultRequestBody() throws IOException {
-        final ClientConfig config = ClientConfig.builder().setApiKey(API_KEY).build();
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"));
-        HttpEntity requestEntity = apiEndpoint.prepareRequestEntity(config);
+    void prepareRequestEntity_singleContentIdNoParams_defaultRequestBody() throws IOException {
+        final AbstractApiEndpoint apiEndpoint = new SingleContentEndpoint(CONFIG, "id1");
+        HttpEntity requestEntity = apiEndpoint.prepareRequestEntity();
         assertEquals("application/json; charset=UTF-8", requestEntity.getContentType());
         assertEquals("{\"p\":{},\"u\":\"\"}",OBJECT_MAPPER.readTree(requestEntity.getContent()).toString());
     }
@@ -49,8 +50,8 @@ class AbstractApiEndpointTest {
     @Test
     void prepareRequestEntity_multipleContentIdsNoParams_defaultRequestBody() throws IOException {
         final ClientConfig config = ClientConfig.builder().setApiKey(API_KEY).build();
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1", "id2"));
-        HttpEntity requestEntity = apiEndpoint.prepareRequestEntity(config);
+        final AbstractApiEndpoint apiEndpoint = new MultipleContentEndpoint(CONFIG, ImmutableSet.of("id1", "id2"));
+        HttpEntity requestEntity = apiEndpoint.prepareRequestEntity();
         assertEquals("application/json; charset=UTF-8", requestEntity.getContentType());
         assertEquals("{\"p\":{},\"u\":\"\"}",OBJECT_MAPPER.readTree(requestEntity.getContent()).toString());
     }
@@ -63,22 +64,22 @@ class AbstractApiEndpointTest {
             .setParams(ImmutableMap.of("key1", "value1", "k2", "v2"))
             .setUserId("bestUser")
             .build();
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1", "id2"));
-        HttpEntity requestEntity = apiEndpoint.prepareRequestEntity(config);
+        final AbstractApiEndpoint apiEndpoint = new MultipleContentEndpoint(config, ImmutableSet.of("id1", "id2"));
+        HttpEntity requestEntity = apiEndpoint.prepareRequestEntity();
         assertEquals("application/json; charset=UTF-8", requestEntity.getContentType());
         assertEquals("{\"p\":{\"key1\":\"value1\",\"k2\":\"v2\"},\"u\":\"bestUser\",\"v\":\"0.0.1\"}",OBJECT_MAPPER.readTree(requestEntity.getContent()).toString());
     }
 
     @Test
     void processCommonResponseErrors_500Code_apiServerExceptionThrown() {
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"));
+        final AbstractApiEndpoint apiEndpoint = new SingleContentEndpoint(CONFIG, "id1");
         assertThrows(ApiServerException.class,
             () -> apiEndpoint.processCommonResponseErrors(new BasicClassicHttpResponse(500)));
     }
 
     @Test
     void processCommonResponseErrors_400Code_apiBadRequestExceptionThrown() {
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"));
+        final AbstractApiEndpoint apiEndpoint = new SingleContentEndpoint(CONFIG, "id1");
         assertThrows(ApiBadRequestException.class,
             () -> apiEndpoint.processCommonResponseErrors(new BasicClassicHttpResponse(400)));
         assertThrows(ApiBadRequestException.class,
@@ -87,7 +88,7 @@ class AbstractApiEndpointTest {
 
     @Test
     void processCommonResponseErrors_300Code_apiUnknownExceptionThrown() {
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"));
+        final AbstractApiEndpoint apiEndpoint = new SingleContentEndpoint(CONFIG, "id1");
         assertThrows(ApiUnknownException.class,
             () -> apiEndpoint.processCommonResponseErrors(new BasicClassicHttpResponse(300)));
     }
@@ -96,7 +97,7 @@ class AbstractApiEndpointTest {
     void processCommonResponseErrors_nullResponseEntity_apiUnknownExceptionThrown() {
         ClassicHttpResponse response = new BasicClassicHttpResponse(200);
         response.setEntity(null);
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"));
+        final AbstractApiEndpoint apiEndpoint = new SingleContentEndpoint(CONFIG, "id1");
         final ApiUnknownException error = assertThrows(ApiUnknownException.class,
             () -> apiEndpoint.parseResponseToJson(response));
         assertEquals( "Response body is empty", error.getMessage());
@@ -107,7 +108,7 @@ class AbstractApiEndpointTest {
         ClassicHttpResponse response = new BasicClassicHttpResponse(200);
         response.setEntity(HttpEntities.create("{\"data\":{\"hello\":\"world\"},\"hash\":\"dbf261eb\",\"meta\":" +
             "{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}"));
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"));
+        final AbstractApiEndpoint apiEndpoint = new SingleContentEndpoint(CONFIG, "id1");
         JsonNode jsonNode = apiEndpoint.processResponse(response);
         assertEquals("{\"hello\":\"world\"}", jsonNode.toString());
     }
@@ -117,7 +118,7 @@ class AbstractApiEndpointTest {
         ClassicHttpResponse response = new BasicClassicHttpResponse(200);
         response.setEntity(HttpEntities.create("{\"data\":\"{\\\"hello\\\":\\\"world\\\"}\",\"hash\":\"dbf261eb\"," +
             "\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}"));
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"));
+        final AbstractApiEndpoint apiEndpoint = new SingleContentEndpoint(CONFIG, "id1");
         JsonNode jsonNode = apiEndpoint.processResponse(response);
         assertEquals("\"{\\\"hello\\\":\\\"world\\\"}\"", jsonNode.toString());
     }
@@ -127,7 +128,7 @@ class AbstractApiEndpointTest {
         ClassicHttpResponse response = new BasicClassicHttpResponse(200);
         response.setEntity(HttpEntities.create("{\"data\":{\"hello\":\"world\"},\"hash\":\"dbf261eb\",\"meta\":" +
             "{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}"));
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"), false, true);
+        final AbstractApiEndpoint apiEndpoint = new SingleContentEndpoint(CONFIG, "id1").setFullResponse(true);
         JsonNode jsonNode = apiEndpoint.processResponse(response);
         assertEquals("{\"data\":{\"hello\":\"world\"},\"hash\":\"dbf261eb\"," +
             "\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}", jsonNode.toString());
@@ -138,8 +139,7 @@ class AbstractApiEndpointTest {
         ClassicHttpResponse response = new BasicClassicHttpResponse(200);
         response.setEntity(HttpEntities.create("{\"data\":\"{\\\"hello\\\":\\\"world\\\"}\",\"hash\":\"dbf261eb\"," +
             "\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}"));
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"),
-            false, true);
+        final AbstractApiEndpoint apiEndpoint = new SingleContentEndpoint(CONFIG, "id1").setFullResponse(true);
         JsonNode jsonNode = apiEndpoint.processResponse(response);
         assertEquals("{\"data\":\"{\\\"hello\\\":\\\"world\\\"}\",\"hash\":\"dbf261eb\"," +
             "\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}", jsonNode.toString());
@@ -149,7 +149,7 @@ class AbstractApiEndpointTest {
     void processResponse_invalidJsonResponse_apiUnknownExceptionThrown() {
         ClassicHttpResponse response = new BasicClassicHttpResponse(200);
         response.setEntity(HttpEntities.create("{\"data\":,,,{} some invalid Json}}"));
-        final AbstractApiEndpoint apiEndpoint = ApiEndpointFactory.build(ImmutableSet.of("id1"));
+        final AbstractApiEndpoint apiEndpoint = new SingleContentEndpoint(CONFIG, "id1");
         final ApiUnknownException error = assertThrows(ApiUnknownException.class,
             () -> apiEndpoint.processResponse(response));
         assertEquals( "Response is not in JSON format", error.getMessage());

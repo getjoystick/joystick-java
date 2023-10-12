@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ConfigurationException;
 import com.getjoystick.sdk.errors.MultipleContentsApiException;
 import com.getjoystick.sdk.models.RequestBody;
@@ -33,14 +34,13 @@ class MultipleContentEndpointTest {
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .build();
     }
+    private static final ClientConfig CONFIG = ClientConfig.builder().setApiKey("test-api-key").build();
 
     @Test
     void getQueryParameters_allParamsSet_paramOrderAndValuesCorrect() {
         Set<String> contentIds = ImmutableSet.of("id1", "id2","id3");
-        AbstractApiEndpoint multipleConfigsApiEndpoint = MultipleContentEndpoint.builder()
-            .setContentIds(contentIds)
-            .setSerialized(true)
-            .build();
+        AbstractApiEndpoint multipleConfigsApiEndpoint = new MultipleContentEndpoint(CONFIG, contentIds)
+            .setSerialized(true);
         NameValuePair[] queryParams = multipleConfigsApiEndpoint.getQueryParameters();
         assertEquals(new BasicNameValuePair("dynamic", "true"), queryParams[0]);
         assertEquals(new BasicNameValuePair("responseType", "serialized"), queryParams[1]);
@@ -51,10 +51,8 @@ class MultipleContentEndpointTest {
     @Test
     void getRequestBody_allParamsSet_validRequestBody() {
         Set<String> contentIds = ImmutableSet.of("id1", "id2","id3");
-        AbstractApiEndpoint multipleConfigsApiEndpoint = MultipleContentEndpoint.builder()
-            .setContentIds(contentIds)
-            .setSerialized(true)
-            .build();
+        AbstractApiEndpoint multipleConfigsApiEndpoint = new MultipleContentEndpoint(CONFIG, contentIds)
+            .setSerialized(true);
         RequestBody requestBody = multipleConfigsApiEndpoint
             .getRequestBody("userId", ImmutableMap.of("p_key1", "p_value1"), "1.1");
         assertEquals("userId", requestBody.getU());
@@ -65,10 +63,8 @@ class MultipleContentEndpointTest {
     @Test
     void getRequestBody_nullParams_requestBodyWithDefaultParams() {
         Set<String> contentIds = ImmutableSet.of("id1", "id2","id3");
-        AbstractApiEndpoint multipleConfigsApiEndpoint = MultipleContentEndpoint.builder()
-            .setContentIds(contentIds)
-            .setSerialized(true)
-            .build();
+        AbstractApiEndpoint multipleConfigsApiEndpoint = new MultipleContentEndpoint(CONFIG, contentIds)
+            .setSerialized(true);
         RequestBody expectedResult = RequestBody.builder().build();
         RequestBody requestBody = multipleConfigsApiEndpoint
             .getRequestBody(null, null, null);
@@ -81,14 +77,14 @@ class MultipleContentEndpointTest {
     @Test
     void build_nullContentIds_exceptionIsThrown() {
         final ConfigurationException error = assertThrows(ConfigurationException.class,
-            () -> MultipleContentEndpoint.builder().build());
+            () -> new MultipleContentEndpoint(CONFIG, null));
         assertEquals( "Content IDs are not provided.", error.getMessage());
     }
 
     @Test
     void build_emptyContentIds_exceptionIsThrown() {
         final ConfigurationException error = assertThrows(ConfigurationException.class,
-            () -> MultipleContentEndpoint.builder().setContentIds(ImmutableSet.of()).build());
+            () -> new MultipleContentEndpoint(CONFIG, ImmutableSet.of()));
         assertEquals( "Content IDs are not provided.", error.getMessage());
     }
 
@@ -99,10 +95,8 @@ class MultipleContentEndpointTest {
             "\"dev_test_002\":{\"data\":{\"config_name\":\"initial-test-config-dev-002\"}," +
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}}");
 
-        MultipleContentEndpoint multipleContent = MultipleContentEndpoint.builder()
-            .setContentIds(ImmutableSet.of("id1", "id2"))
-            .setFullResponse(true)
-            .build();
+        MultipleContentEndpoint multipleContent = new MultipleContentEndpoint(CONFIG, ImmutableSet.of("id1", "id2"))
+            .setFullResponse(true);
 
         final JsonNode result = multipleContent.formatJsonResponse(jsonNode);
         assertEquals(jsonNode, result);
@@ -114,10 +108,8 @@ class MultipleContentEndpointTest {
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}," +
             "\"dev_test_002\":\"Some error occurred\"}");
 
-        MultipleContentEndpoint multipleContent = MultipleContentEndpoint.builder()
-            .setContentIds(ImmutableSet.of("id1", "id2"))
-            .setFullResponse(true)
-            .build();
+        MultipleContentEndpoint multipleContent = new MultipleContentEndpoint(CONFIG, ImmutableSet.of("id1", "id2"))
+            .setFullResponse(true);
 
         final JsonNode resultErrorNode = OBJECT_MAPPER.readTree("{\"dev_test_002\":\"Some error occurred\"}");
         final MultipleContentsApiException error = assertThrows(MultipleContentsApiException.class,
@@ -133,10 +125,8 @@ class MultipleContentEndpointTest {
             "\"dev_test_002\":{\"data\":{\"config_name\":\"initial-test-config-dev-002\"}," +
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}}");
 
-        MultipleContentEndpoint multipleContent = MultipleContentEndpoint.builder()
-            .setContentIds(ImmutableSet.of("id1", "id2"))
-            .setFullResponse(false)
-            .build();
+        MultipleContentEndpoint multipleContent = new MultipleContentEndpoint(CONFIG, ImmutableSet.of("id1", "id2"))
+            .setFullResponse(false);
 
         final JsonNode result = multipleContent.formatJsonResponse(jsonNode);
         assertEquals("{\"dev_test_001\":{\"config_name\":\"initial-test-config-dev-001\"}," +
@@ -149,9 +139,7 @@ class MultipleContentEndpointTest {
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}," +
             "\"dev_test_002\":\"Some error occurred\"}");
 
-        MultipleContentEndpoint multipleContent = MultipleContentEndpoint.builder()
-            .setContentIds(ImmutableSet.of("id1", "id2"))
-            .build();
+        MultipleContentEndpoint multipleContent = new MultipleContentEndpoint(CONFIG, ImmutableSet.of("id1", "id2"));
 
         final JsonNode resultErrorNode = OBJECT_MAPPER.readTree("{\"dev_test_002\":\"Some error occurred\"}");
         final MultipleContentsApiException error = assertThrows(MultipleContentsApiException.class,

@@ -9,8 +9,9 @@ import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ConfigurationException;
 import com.getjoystick.sdk.errors.MultipleContentsApiException;
 import com.getjoystick.sdk.util.ApiCacheKeyUtil;
-import lombok.Builder;
 import lombok.NonNull;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 
@@ -19,7 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Builder(setterPrefix = "set")
+@Accessors(chain = true)
 public class MultipleContentEndpoint extends AbstractApiEndpoint {
 
     private static final String PARAM_CONTENT_IDS = "c";
@@ -27,19 +28,36 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
     private static final String MULTI_CONFIG_URL = "https://api.getjoystick.com/api/v1/combine/";
 
     private Collection<String> contentIds;
+    @Setter
     private boolean serialized;
+    @Setter
     private boolean fullResponse;
+
+    public MultipleContentEndpoint(final ClientConfig config, final Collection<String> contentIds) {
+        if (contentIds == null || contentIds.isEmpty()) {
+            throw new ConfigurationException("Content IDs are not provided.");
+        }
+        if(config == null) {
+            throw new ConfigurationException("Config is not provided.");
+        }
+        this.config = config;
+        this.contentIds = contentIds;
+    }
 
     @Override
     public String getUrl() {
         return MULTI_CONFIG_URL;
     }
 
+    private boolean isSerialized() {
+        return serialized || config.isSerialized();
+    }
+
     @Override
     public @NonNull NameValuePair[] getQueryParameters() {
         final Collection<NameValuePair> qParams = new ArrayList<>();
         qParams.add(new BasicNameValuePair(PARAM_DYNAMIC, "true"));
-        if (serialized) {
+        if (isSerialized()) {
             qParams.add(new BasicNameValuePair(PARAM_RESP_TYPE, "serialized"));
         }
         try {
@@ -55,7 +73,7 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
      */
     @Override
     public String getContentHash(final ClientConfig config) {
-        return ApiCacheKeyUtil.getHash(config, contentIds, serialized, fullResponse);
+        return ApiCacheKeyUtil.getHash(config, contentIds, isSerialized(), fullResponse);
     }
 
     /**
@@ -77,7 +95,7 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
             }
         });
         if(!errorMap.isEmpty()) {
-            final StringBuffer errorBuffer = new StringBuffer("Response from remote server contains errors:");
+            final StringBuilder errorBuffer = new StringBuilder("Response from remote server contains errors:");
             errorBuffer.append(System.lineSeparator());
             errorBuffer.append(new ObjectNode(JsonNodeFactory.instance, errorMap).toPrettyString());
             throw new MultipleContentsApiException(errorBuffer.toString());
@@ -94,22 +112,5 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
             }
         });
         return new ObjectNode(JsonNodeFactory.instance, dataByContentId);
-    }
-
-    public static MultipleContentEndpointBuilder builder() {
-        return new OverrideMultipleContentEndpointBuilder();
-    }
-
-    private static class OverrideMultipleContentEndpointBuilder extends
-        MultipleContentEndpointBuilder {
-
-        @Override
-        public MultipleContentEndpoint build() {
-            if (super.contentIds == null || super.contentIds.isEmpty()) {
-                throw new ConfigurationException("Content IDs are not provided.");
-            }
-            return super.build();
-        }
-
     }
 }

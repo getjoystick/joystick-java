@@ -4,6 +4,7 @@ import com.getjoystick.sdk.errors.ApiUnknownException;
 import com.getjoystick.sdk.models.JoystickData;
 import com.getjoystick.sdk.models.JoystickFullContent;
 import com.getjoystick.sdk.models.JoystickFullContentJson;
+import com.getjoystick.sdk.models.PublishData;
 import com.getjoystick.sdk.models.ResponseType;
 
 import java.io.Closeable;
@@ -210,5 +211,13 @@ public interface Client extends Closeable {
      *                             any unexpected {@link IOException} is thrown.
      */
     String getContentsAsString(Collection<String> contentIds, ResponseType responseType, boolean fullResponse, boolean refresh);
+
+    /**
+     * Publish update for already existing content in Joystick
+     *
+     * @param contentId id of existing content
+     * @param data includes data to be updated in Joystick
+     */
+    void publishContentUpdate(String contentId, PublishData data);
 
 }
