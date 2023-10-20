@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ConfigurationException;
 import com.getjoystick.sdk.models.PublishData;
+import com.getjoystick.sdk.util.JoystickMapper;
 import lombok.NonNull;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
@@ -17,8 +18,8 @@ public class PublishUpdateEndpoint extends AbstractApiEndpoint {
 
     private static final String API_URL = "https://capi.getjoystick.com/api/v1/config/%s";
 
-    private String contentId;
-    private PublishData data;
+    private final String contentId;
+    private final PublishData data;
 
     public PublishUpdateEndpoint(final PublishData data, final String contentId) {
         if (contentId == null || contentId.trim().isEmpty()) {
@@ -66,7 +67,7 @@ public class PublishUpdateEndpoint extends AbstractApiEndpoint {
     @Override
     public HttpEntity prepareRequestEntity() {
         return HttpEntities.create(outputStream -> {
-            OBJECT_MAPPER.writeValue(outputStream, data);
+            JoystickMapper.writeValue(outputStream, data);
             outputStream.flush();
         }, ContentType.APPLICATION_JSON);
     }

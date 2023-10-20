@@ -9,6 +9,7 @@ import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ConfigurationException;
 import com.getjoystick.sdk.errors.MultipleContentsApiException;
 import com.getjoystick.sdk.util.ApiCacheKeyUtil;
+import com.getjoystick.sdk.util.JoystickMapper;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -27,7 +28,7 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
     private static final String PARAM_DYNAMIC = "dynamic";
     private static final String MULTI_CONFIG_URL = "https://api.getjoystick.com/api/v1/combine/";
 
-    private Collection<String> contentIds;
+    private final Collection<String> contentIds;
     @Setter
     private boolean serialized;
     @Setter
@@ -61,7 +62,7 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
             qParams.add(new BasicNameValuePair(PARAM_RESP_TYPE, "serialized"));
         }
         try {
-            qParams.add(new BasicNameValuePair(PARAM_CONTENT_IDS, OBJECT_MAPPER.writeValueAsString(contentIds)));
+            qParams.add(new BasicNameValuePair(PARAM_CONTENT_IDS, JoystickMapper.writeValueAsString(contentIds)));
         } catch (JsonProcessingException e) {
             throw new ConfigurationException(e);
         }
@@ -99,10 +100,9 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
             }
         });
         if(!errorMap.isEmpty()) {
-            final StringBuilder errorBuffer = new StringBuilder("Response from remote server contains errors:");
-            errorBuffer.append(System.lineSeparator());
-            errorBuffer.append(new ObjectNode(JsonNodeFactory.instance, errorMap).toPrettyString());
-            throw new MultipleContentsApiException(errorBuffer.toString());
+            String errorBuffer = "Response from remote server contains errors:" + System.lineSeparator() +
+                new ObjectNode(JsonNodeFactory.instance, errorMap).toPrettyString();
+            throw new MultipleContentsApiException(errorBuffer);
         }
     }
 

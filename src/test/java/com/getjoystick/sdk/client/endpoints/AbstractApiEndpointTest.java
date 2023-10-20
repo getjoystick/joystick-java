@@ -1,15 +1,11 @@
 package com.getjoystick.sdk.client.endpoints;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ApiBadRequestException;
 import com.getjoystick.sdk.errors.ApiServerException;
 import com.getjoystick.sdk.errors.ApiUnknownException;
+import com.getjoystick.sdk.util.JoystickMapper;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -28,23 +24,12 @@ class AbstractApiEndpointTest {
     private static final String API_KEY = "test-api-key";
     private static final ClientConfig CONFIG = ClientConfig.builder().setApiKey(API_KEY).build();
 
-
-    private static final ObjectMapper OBJECT_MAPPER;
-
-    static {
-        OBJECT_MAPPER = JsonMapper.builder()
-            .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
-            .serializationInclusion(JsonInclude.Include.NON_NULL)
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .build();
-    }
-
     @Test
     void prepareRequestEntity_singleContentIdNoParams_defaultRequestBody() throws IOException {
         final AbstractApiEndpoint apiEndpoint = new SingleContentEndpoint(CONFIG, "id1");
         HttpEntity requestEntity = apiEndpoint.prepareRequestEntity();
         assertEquals("application/json; charset=UTF-8", requestEntity.getContentType());
-        assertEquals("{\"p\":{},\"u\":\"\"}",OBJECT_MAPPER.readTree(requestEntity.getContent()).toString());
+        assertEquals("{\"p\":{},\"u\":\"\"}", JoystickMapper.readTree(requestEntity.getContent()).toString());
     }
 
     @Test
@@ -53,7 +38,7 @@ class AbstractApiEndpointTest {
         final AbstractApiEndpoint apiEndpoint = new MultipleContentEndpoint(CONFIG, ImmutableSet.of("id1", "id2"));
         HttpEntity requestEntity = apiEndpoint.prepareRequestEntity();
         assertEquals("application/json; charset=UTF-8", requestEntity.getContentType());
-        assertEquals("{\"p\":{},\"u\":\"\"}",OBJECT_MAPPER.readTree(requestEntity.getContent()).toString());
+        assertEquals("{\"p\":{},\"u\":\"\"}",JoystickMapper.readTree(requestEntity.getContent()).toString());
     }
 
     @Test
@@ -67,7 +52,8 @@ class AbstractApiEndpointTest {
         final AbstractApiEndpoint apiEndpoint = new MultipleContentEndpoint(config, ImmutableSet.of("id1", "id2"));
         HttpEntity requestEntity = apiEndpoint.prepareRequestEntity();
         assertEquals("application/json; charset=UTF-8", requestEntity.getContentType());
-        assertEquals("{\"p\":{\"key1\":\"value1\",\"k2\":\"v2\"},\"u\":\"bestUser\",\"v\":\"0.0.1\"}",OBJECT_MAPPER.readTree(requestEntity.getContent()).toString());
+        assertEquals("{\"p\":{\"key1\":\"value1\",\"k2\":\"v2\"},\"u\":\"bestUser\",\"v\":\"0.0.1\"}",
+            JoystickMapper.readTree(requestEntity.getContent()).toString());
     }
 
     @Test

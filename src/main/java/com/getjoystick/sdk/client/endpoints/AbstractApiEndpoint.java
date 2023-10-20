@@ -1,18 +1,14 @@
 package com.getjoystick.sdk.client.endpoints;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ApiBadRequestException;
 import com.getjoystick.sdk.errors.ApiServerException;
 import com.getjoystick.sdk.errors.ApiUnknownException;
 import com.getjoystick.sdk.errors.JoystickException;
 import com.getjoystick.sdk.models.RequestBody;
+import com.getjoystick.sdk.util.JoystickMapper;
 import lombok.NonNull;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.entity.HttpEntities;
@@ -27,16 +23,6 @@ public abstract class AbstractApiEndpoint {
 
     protected static final String PARAM_RESP_TYPE = "responseType";
     protected static final String NODE_DATA = "data";
-
-    protected static final ObjectMapper OBJECT_MAPPER;
-
-    static {
-        OBJECT_MAPPER = JsonMapper.builder()
-            .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
-            .serializationInclusion(JsonInclude.Include.NON_NULL)
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .build();
-    }
 
     protected ClientConfig config;
 
@@ -61,7 +47,7 @@ public abstract class AbstractApiEndpoint {
 
     public <T> T toObject(String content, Class<T> clazz) {
         try {
-            return OBJECT_MAPPER.readValue(content, clazz);
+            return JoystickMapper.readValue(content, clazz);
         } catch (JsonProcessingException e) {
             throw new JoystickException("Unable to convert Joystick response to " + clazz, e);
         }
@@ -69,7 +55,7 @@ public abstract class AbstractApiEndpoint {
 
     public <T> T toObject(JsonNode content, Class<T> clazz) {
         try {
-            return OBJECT_MAPPER.treeToValue(content, clazz);
+            return JoystickMapper.treeToValue(content, clazz);
         } catch (JsonProcessingException e) {
             throw new JoystickException("Unable to convert Joystick response to " + clazz, e);
         }
@@ -82,7 +68,7 @@ public abstract class AbstractApiEndpoint {
                 throw new ApiUnknownException("Response body is empty");
             }
             try (InputStream inputStream = responseEntity.getContent()) {
-                return OBJECT_MAPPER.readTree(inputStream);
+                return JoystickMapper.readTree(inputStream);
             } catch (Exception exception) {
                 throw new ApiUnknownException("Response is not in JSON format", exception);
             }
@@ -113,7 +99,7 @@ public abstract class AbstractApiEndpoint {
 
     public HttpEntity prepareRequestEntity() {
         return HttpEntities.create(outputStream -> {
-            OBJECT_MAPPER.writeValue(outputStream,
+            JoystickMapper.writeValue(outputStream,
                 getRequestBody(
                     config.getUserId(),
                     config.getParams(),
