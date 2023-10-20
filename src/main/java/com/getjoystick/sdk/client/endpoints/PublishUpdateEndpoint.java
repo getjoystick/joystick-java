@@ -47,8 +47,10 @@ public class PublishUpdateEndpoint extends AbstractApiEndpoint {
     }
 
     /**
-     * @param jsonNode
-     * @return
+     * Unsupported operation for publish content
+     *
+     * @param jsonNode json content
+     * @return throws UnsupportedOperationException
      */
     @Override
     public JsonNode formatJsonResponse(final JsonNode jsonNode) {

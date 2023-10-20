@@ -44,13 +44,21 @@ public class SingleContentEndpoint extends AbstractApiEndpoint {
     }
 
     /**
-     * @return
+     * Get content hash in String format
+     *
+     * @param config client configuration
+     * @return content hash in String format
      */
     @Override
     public String getContentHash(final ClientConfig config) {
         return ApiCacheKeyUtil.getHash(config, contentId, isSerialized(), fullResponse);
     }
 
+    /**
+     * Get array of query parameters
+     *
+     * @return array of parameters as NameValuePair
+     */
     @Override
     public @NonNull NameValuePair[] getQueryParameters() {
         final Collection<NameValuePair> qParams = new ArrayList<>();
@@ -61,8 +69,10 @@ public class SingleContentEndpoint extends AbstractApiEndpoint {
     }
 
     /**
-     * @param jsonNode
-     * @return
+     * Format json to contain either full content or data only
+     *
+     * @param jsonNode to format
+     * @return response formatted either in full or in short mode
      */
     @Override
     public JsonNode formatJsonResponse(final JsonNode jsonNode) {

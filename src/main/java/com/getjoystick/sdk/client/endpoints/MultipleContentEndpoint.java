@@ -69,7 +69,9 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
     }
 
     /**
-     * @return
+     * Generate content hash
+     *
+     * @return content hash in String format
      */
     @Override
     public String getContentHash(final ClientConfig config) {
@@ -77,8 +79,10 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
     }
 
     /**
-     * @param jsonNode
-     * @return
+     * Validate and format multi json response
+     *
+     * @param jsonNode json content
+     * @return full response or data only based on fullResponse flag
      */
     @Override
     public JsonNode formatJsonResponse(final JsonNode jsonNode) {

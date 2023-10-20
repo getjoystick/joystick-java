@@ -75,7 +75,7 @@ public interface Client extends Closeable {
     /**
      * Get map of configurations in full format, including meta and hash, for multiple content ids
      *
-     * @param contentIds
+     * @param contentIds collection of content ids
      * @return map of full configuration data by content id
      */
     Map<String, JoystickFullContentJson> getFullContents(Collection<String> contentIds);
@@ -151,7 +151,7 @@ public interface Client extends Closeable {
     /**
      * Get map of configurations in full format, including meta and hash, for multiple content ids
      *
-     * @param contentIds
+     * @param contentIds collection of content ids
      * @param refresh if true then content is loaded via Joystick remote call, skipping cache
      * @return map of full configuration data by content id
      */

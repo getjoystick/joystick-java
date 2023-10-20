@@ -137,7 +137,7 @@ public class ClientImpl implements Client {
     /**
      * Get map of configurations in full format, including meta and hash, for multiple content ids
      *
-     * @param contentIds
+     * @param contentIds collection of content ids
      * @return map of full configuration data by content id
      */
     @Override
@@ -265,7 +265,7 @@ public class ClientImpl implements Client {
     /**
      * Get map of configurations in full format, including meta and hash, for multiple content ids
      *
-     * @param contentIds
+     * @param contentIds collection of content ids
      * @param refresh    if true then content is loaded via Joystick remote call, skipping cache
      * @return map of full configuration data by content id
      */
@@ -310,19 +310,36 @@ public class ClientImpl implements Client {
 
 
     /**
-     * @param contentIds
-     * @return
+     * Get Joystick content in String format
+     *
+     * @param contentIds collection of content ids
+     * @return Joystick content in String format
      */
     @Override
     public String getContentsAsString(final Collection<String> contentIds) {
         return getContentsAsString(contentIds, null);
     }
 
+    /**
+     * Get Joystick content in String format
+     *
+     * @param contentIds collection of content ids in string format
+     * @param responseType declares if response should be serialized or not serialized
+     * @return Joystick content in String format
+     */
     @Override
     public String getContentsAsString(final Collection<String> contentIds, final ResponseType responseType) {
         return getContentsAsString(contentIds, responseType, false);
     }
 
+    /**
+     * Get Joystick content in String format
+     *
+     * @param contentIds collection of content ids in string format
+     * @param responseType declares if response should be serialized or not serialized
+     * @param fullResponse if response should be in full format
+     * @return Joystick content in String format
+     */
     @Override
     public String getContentsAsString(final Collection<String> contentIds, final ResponseType responseType,
                                       final boolean fullResponse) {
@@ -330,7 +347,13 @@ public class ClientImpl implements Client {
     }
 
     /**
-     * @return response content
+     * Get Joystick content in String format
+     *
+     * @param contentIds collection of content ids in string format
+     * @param responseType declares if response should be serialized or not serialized
+     * @param fullResponse if response should be in full format
+     * @param refresh if true direct call to Joystick will be made skipping cache
+     * @return Joystick content in String format
      */
     @Override
     public String getContentsAsString(final Collection<String> contentIds, final ResponseType responseType,
@@ -340,6 +363,13 @@ public class ClientImpl implements Client {
         return getContentsAsString(contentEndpoint, refresh);
     }
 
+    /**
+     * Get Joystick content in String format
+     *
+     * @param contentEndpoint
+     * @param refresh
+     * @return Joystick content in String format
+     */
     private String getContentsAsString(final AbstractApiEndpoint contentEndpoint, final boolean refresh) {
         final String hash = contentEndpoint.getContentHash(config);
         final String cachedContents = refresh ? null: cache.get(hash);

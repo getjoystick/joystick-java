@@ -15,11 +15,11 @@ public final class ApiCacheKeyUtil {
      * GCSC-01
      * Implementation of SHA-256 hash algorithm to calculate configuration hash.
      *
-     * @param config
-     * @param contentIds
-     * @param serialized
-     * @param fullResponse
-     * @return
+     * @param config client configuration
+     * @param contentIds collection of content ids
+     * @param serialized if true, then result will be returned in serialized format
+     * @param fullResponse if true - return full content, including data, meta and hash
+     * @return string hash based on input parameters
      */
     public static String getHash(final ClientConfig config, final Collection<String> contentIds,
                                  final boolean serialized, final boolean fullResponse) {
@@ -27,6 +27,16 @@ public final class ApiCacheKeyUtil {
         return getHash(config, contentIdsString, serialized, fullResponse);
     }
 
+    /**
+     * GCSC-01
+     * Implementation of SHA-256 hash algorithm to calculate configuration hash.
+     *
+     * @param config client configuration
+     * @param contentIdsString content id or ids in string format
+     * @param serialized if true, then result will be returned in serialized format
+     * @param fullResponse if true - return full content, including data, meta and hash
+     * @return string hash based on input parameters
+     */
     public static String getHash(final ClientConfig config, final String contentIdsString,
                                  final boolean serialized, final boolean fullResponse) {
         final String key = config.getApiKey();
