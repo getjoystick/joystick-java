@@ -10,6 +10,7 @@ import com.getjoystick.sdk.client.endpoints.PublishUpdateEndpoint;
 import com.getjoystick.sdk.client.endpoints.MultipleContentEndpoint;
 import com.getjoystick.sdk.client.endpoints.SingleContentEndpoint;
 import com.getjoystick.sdk.errors.ApiUnknownException;
+import com.getjoystick.sdk.models.JoystickContentOptions;
 import com.getjoystick.sdk.models.JoystickData;
 import com.getjoystick.sdk.models.JoystickFullContent;
 import com.getjoystick.sdk.models.JoystickFullContentJson;
@@ -73,7 +74,7 @@ public class ClientImpl implements Client {
      */
     @Override
     public <T> T getContent(String contentId, Class<T> clazz) {
-        return getContent(contentId, clazz, false);
+        return getContent(contentId, clazz, new JoystickContentOptions(false));
     }
 
     /**
@@ -84,7 +85,7 @@ public class ClientImpl implements Client {
      */
     @Override
     public String getContentSerialized(String contentId) {
-        return getContentSerialized(contentId, false);
+        return getContentSerialized(contentId, new JoystickContentOptions(false));
     }
 
     /**
@@ -97,7 +98,7 @@ public class ClientImpl implements Client {
      */
     @Override
     public <T> JoystickFullContent<T> getFullContent(String contentId, Class<T> clazz) {
-        return getFullContent(contentId, clazz, false);
+        return getFullContent(contentId, clazz, new JoystickContentOptions(false));
     }
 
     /**
@@ -108,7 +109,7 @@ public class ClientImpl implements Client {
      */
     @Override
     public JoystickFullContent<String> getFullContentSerialized(String contentId) {
-        return getFullContentSerialized(contentId, false);
+        return getFullContentSerialized(contentId, new JoystickContentOptions(false));
     }
 
     /**
@@ -119,7 +120,7 @@ public class ClientImpl implements Client {
      */
     @Override
     public Map<String, JoystickData> getContents(Collection<String> contentIds) {
-        return getContents(contentIds, false);
+        return getContents(contentIds, new JoystickContentOptions(false));
     }
 
 
@@ -131,7 +132,7 @@ public class ClientImpl implements Client {
      */
     @Override
     public Map<String, String> getContentsSerialized(Collection<String> contentIds) {
-        return getContentsSerialized(contentIds, false);
+        return getContentsSerialized(contentIds, new JoystickContentOptions(false));
     }
 
     /**
@@ -142,7 +143,7 @@ public class ClientImpl implements Client {
      */
     @Override
     public Map<String, JoystickFullContentJson> getFullContents(Collection<String> contentIds) {
-        return getFullContents(contentIds, false);
+        return getFullContents(contentIds, new JoystickContentOptions(false));
     }
 
     /**
@@ -153,7 +154,7 @@ public class ClientImpl implements Client {
      */
     @Override
     public Map<String, JoystickFullContent<String>> getFullContentsSerialized(Collection<String> contentIds) {
-        return getFullContentsSerialized(contentIds, false);
+        return getFullContentsSerialized(contentIds, new JoystickContentOptions(false));
     }
 
     /**
@@ -161,15 +162,15 @@ public class ClientImpl implements Client {
      *
      * @param contentId content id in string format
      * @param clazz     Class of object to be returned
-     * @param refresh   if true then content is loaded via Joystick remote call, skipping cache
+     * @param contentOptions optional parameters for getting Joystick content
      * @return Joystick configuration as Java object specified by clazz parameter
      * @throws ApiUnknownException if the response body does not contain valid JSON or
      *                             any unexpected {@link IOException} is thrown.
      */
     @Override
-    public <T> T getContent(String contentId, Class<T> clazz, boolean refresh) {
+    public <T> T getContent(final String contentId, Class<T> clazz, final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId);
-        final String singleContent =  getContentsAsString(singleEndpoint, refresh);
+        final String singleContent =  getContentsAsString(singleEndpoint, contentOptions);
         return singleEndpoint.toObject(singleContent, clazz);
     }
 
@@ -177,13 +178,13 @@ public class ClientImpl implements Client {
      * Get serialized content from Joystick API by contentId.
      *
      * @param contentId content id in String format
-     * @param refresh   if true then content is loaded via Joystick remote call, skipping cache
+     * @param contentOptions optional parameters for getting Joystick content
      * @return Joystick configuration serialized as String
      */
     @Override
-    public String getContentSerialized(String contentId, boolean refresh) {
+    public String getContentSerialized(String contentId, JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId).setSerialized(true);
-        return getContentsAsString(singleEndpoint, refresh);
+        return getContentsAsString(singleEndpoint, contentOptions);
     }
 
     /**
@@ -191,14 +192,15 @@ public class ClientImpl implements Client {
      *
      * @param contentId content id in String format
      * @param clazz     Class of config data
-     * @param refresh   if true then content is loaded via Joystick remote call, skipping cache
+     * @param contentOptions optional parameters for getting Joystick content
      * @return Object representing full Joystick content
      */
     @Override
-    public <T> JoystickFullContent<T> getFullContent(String contentId, Class<T> clazz, boolean refresh) {
+    public <T> JoystickFullContent<T> getFullContent(final String contentId, Class<T> clazz,
+                                                     final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId)
             .setFullResponse(true);
-        final String content =  getContentsAsString(singleEndpoint, refresh);
+        final String content =  getContentsAsString(singleEndpoint, contentOptions);
         final JoystickFullContentJson rawObject = singleEndpoint.toObject(content, JoystickFullContentJson.class);
         return new JoystickFullContent<>(singleEndpoint.toObject(rawObject.getData(), clazz),
             rawObject.getMeta(), rawObject.getHash());
@@ -208,15 +210,16 @@ public class ClientImpl implements Client {
      * Get full content, including meta and hash, from Joystick API by contentId. Config data is serialized.
      *
      * @param contentId content id in String format
-     * @param refresh   if true then content is loaded via Joystick remote call, skipping cache
+     * @param contentOptions optional parameters for getting Joystick content
      * @return bject representing full Joystick content, where config data is serialized to string
      */
     @Override
-    public JoystickFullContent<String> getFullContentSerialized(String contentId, boolean refresh) {
+    public JoystickFullContent<String> getFullContentSerialized(final String contentId,
+                                                                final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId)
             .setSerialized(true)
             .setFullResponse(true);
-        final String content =  getContentsAsString(singleEndpoint,  refresh);
+        final String content =  getContentsAsString(singleEndpoint,  contentOptions);
         final JoystickFullContentJson rawObject = singleEndpoint.toObject(content, JoystickFullContentJson.class);
         return new JoystickFullContent<>(rawObject.getData().toString(),
             rawObject.getMeta(), rawObject.getHash());
@@ -226,13 +229,14 @@ public class ClientImpl implements Client {
      * Get map of configurations for multiple content ids
      *
      * @param contentIds collection of content ids
-     * @param refresh    if true then content is loaded via Joystick remote call, skipping cache
+     * @param contentOptions optional parameters for getting Joystick content
      * @return map of configuration data by content id
      */
     @Override
-    public Map<String, JoystickData> getContents(Collection<String> contentIds, boolean refresh) {
+    public Map<String, JoystickData> getContents(final Collection<String> contentIds,
+                                                 final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds);
-        final String content =  getContentsAsString(multiEndpoint, refresh);
+        final String content =  getContentsAsString(multiEndpoint, contentOptions);
         final JsonNode jsonNode = multiEndpoint.toObject(content, JsonNode.class);
         final Map<String, JoystickData> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry ->
@@ -245,14 +249,15 @@ public class ClientImpl implements Client {
      * Get map of serialized configurations for multiple content ids
      *
      * @param contentIds collection of content id
-     * @param refresh    if true then content is loaded via Joystick remote call, skipping cache
+     * @param contentOptions optional parameters for getting Joystick content
      * @return map of serialized to string configuration data by content id
      */
     @Override
-    public Map<String, String> getContentsSerialized(Collection<String> contentIds, boolean refresh) {
+    public Map<String, String> getContentsSerialized(final Collection<String> contentIds,
+                                                     final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds)
             .setSerialized(true);
-        final String content =  getContentsAsString(multiEndpoint, refresh);
+        final String content =  getContentsAsString(multiEndpoint, contentOptions);
         final JsonNode jsonNode = multiEndpoint.toObject(content, JsonNode.class);
         final Map<String, String> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry -> {
@@ -266,14 +271,15 @@ public class ClientImpl implements Client {
      * Get map of configurations in full format, including meta and hash, for multiple content ids
      *
      * @param contentIds collection of content ids
-     * @param refresh    if true then content is loaded via Joystick remote call, skipping cache
+     * @param contentOptions optional parameters for getting Joystick content
      * @return map of full configuration data by content id
      */
     @Override
-    public Map<String, JoystickFullContentJson> getFullContents(Collection<String> contentIds, boolean refresh) {
+    public Map<String, JoystickFullContentJson> getFullContents(final Collection<String> contentIds,
+                                                                final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds)
             .setFullResponse(true);
-        final String content =  getContentsAsString(multiEndpoint, refresh);
+        final String content =  getContentsAsString(multiEndpoint, contentOptions);
         final JsonNode jsonNode = multiEndpoint.toObject(content, JsonNode.class);
         final Map<String, JoystickFullContentJson> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry -> {
@@ -287,15 +293,16 @@ public class ClientImpl implements Client {
      * Get map of configurations for multiple content ids
      *
      * @param contentIds collection of content ids
-     * @param refresh    if true then content is loaded via Joystick remote call, skipping cache
+     * @param contentOptions optional parameters for getting Joystick content
      * @return map of full content where data config is serialized to string
      */
     @Override
-    public Map<String, JoystickFullContent<String>> getFullContentsSerialized(Collection<String> contentIds, boolean refresh) {
+    public Map<String, JoystickFullContent<String>> getFullContentsSerialized(final Collection<String> contentIds,
+                                                                              final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds)
             .setSerialized(true)
             .setFullResponse(true);
-        final String content =  getContentsAsString(multiEndpoint, refresh);
+        final String content =  getContentsAsString(multiEndpoint, contentOptions);
         final JsonNode jsonNode = multiEndpoint.toObject(content, JsonNode.class);
         final Map<String, JoystickFullContent<String>> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry -> {
@@ -360,19 +367,20 @@ public class ClientImpl implements Client {
                                       final boolean fullResponse, final boolean refresh) {
         final boolean isSerialized = responseType == ResponseType.SERIALIZED || config.isSerialized();
         final AbstractApiEndpoint contentEndpoint = ApiEndpointFactory.build(config, contentIds, isSerialized, fullResponse);
-        return getContentsAsString(contentEndpoint, refresh);
+        return getContentsAsString(contentEndpoint, new JoystickContentOptions(refresh));
     }
 
     /**
      * Get Joystick content in String format
      *
-     * @param contentEndpoint
-     * @param refresh
+     * @param contentEndpoint endpoint to load Joystick content
+     * @param contentOptions optional parameters for getting Joystick content
      * @return Joystick content in String format
      */
-    private String getContentsAsString(final AbstractApiEndpoint contentEndpoint, final boolean refresh) {
+    private String getContentsAsString(final AbstractApiEndpoint contentEndpoint,
+                                       final JoystickContentOptions contentOptions) {
         final String hash = contentEndpoint.getContentHash(config);
-        final String cachedContents = refresh ? null: cache.get(hash);
+        final String cachedContents = contentOptions.isRefresh() ? null: cache.get(hash);
         if (cachedContents != null) {
             return cachedContents;
         }
