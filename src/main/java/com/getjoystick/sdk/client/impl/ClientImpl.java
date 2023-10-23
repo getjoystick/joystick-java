@@ -11,7 +11,7 @@ import com.getjoystick.sdk.client.endpoints.MultipleContentEndpoint;
 import com.getjoystick.sdk.client.endpoints.SingleContentEndpoint;
 import com.getjoystick.sdk.errors.ApiUnknownException;
 import com.getjoystick.sdk.models.JoystickContentOptions;
-import com.getjoystick.sdk.models.JoystickData;
+import com.getjoystick.sdk.models.JoystickContent;
 import com.getjoystick.sdk.models.JoystickFullContent;
 import com.getjoystick.sdk.models.JoystickFullContentJson;
 import com.getjoystick.sdk.models.PublishData;
@@ -63,18 +63,16 @@ public class ClientImpl implements Client {
     }
 
     /**
-     * Get content from Joystick API by contentId and class.
+     * Get content from Joystick API by contentId
      *
      * @param contentId content id in string format
-     * @param clazz Class of object to be returned
-     * @param <T> Type of object to be returned
-     * @return Joystick configuration as Java object specified by clazz parameter
+     * @return configuration content from Joystick
      * @throws ApiUnknownException if the response body does not contain valid JSON or
      *                             any unexpected {@link IOException} is thrown.
      */
     @Override
-    public <T> T getContent(String contentId, Class<T> clazz) {
-        return getContent(contentId, clazz, new JoystickContentOptions(false));
+    public JoystickContent getContent(String contentId) {
+        return getContent(contentId, new JoystickContentOptions(false));
     }
 
     /**
@@ -92,13 +90,11 @@ public class ClientImpl implements Client {
      * Get full content, including meta and hash, from Joystick API by contentId.
      *
      * @param contentId content id in String format
-     * @param clazz Class of config data
      * @return Object representing full Joystick content
-     * @param <T> type of config data
      */
     @Override
-    public <T> JoystickFullContent<T> getFullContent(String contentId, Class<T> clazz) {
-        return getFullContent(contentId, clazz, new JoystickContentOptions(false));
+    public JoystickFullContent<JoystickContent> getFullContent(String contentId) {
+        return getFullContent(contentId, new JoystickContentOptions(false));
     }
 
     /**
@@ -119,7 +115,7 @@ public class ClientImpl implements Client {
      * @return map of configuration data by content id
      */
     @Override
-    public Map<String, JoystickData> getContents(Collection<String> contentIds) {
+    public Map<String, JoystickContent> getContents(Collection<String> contentIds) {
         return getContents(contentIds, new JoystickContentOptions(false));
     }
 
@@ -142,7 +138,7 @@ public class ClientImpl implements Client {
      * @return map of full configuration data by content id
      */
     @Override
-    public Map<String, JoystickFullContentJson> getFullContents(Collection<String> contentIds) {
+    public Map<String, JoystickFullContent<JoystickContent>> getFullContents(Collection<String> contentIds) {
         return getFullContents(contentIds, new JoystickContentOptions(false));
     }
 
@@ -158,20 +154,20 @@ public class ClientImpl implements Client {
     }
 
     /**
-     * Get content from Joystick API by contentId and class.
+     * Get content from Joystick API by contentId.
      *
      * @param contentId content id in string format
-     * @param clazz     Class of object to be returned
      * @param contentOptions optional parameters for getting Joystick content
-     * @return Joystick configuration as Java object specified by clazz parameter
+     * @return configuration content from Joystick
      * @throws ApiUnknownException if the response body does not contain valid JSON or
      *                             any unexpected {@link IOException} is thrown.
      */
     @Override
-    public <T> T getContent(final String contentId, Class<T> clazz, final JoystickContentOptions contentOptions) {
+    public JoystickContent getContent(final String contentId, final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId);
         final String singleContent =  getContentsAsString(singleEndpoint, contentOptions);
-        return singleEndpoint.toObject(singleContent, clazz);
+        final JsonNode jsonContent = singleEndpoint.toObject(singleContent, JsonNode.class);
+        return new JoystickContent(jsonContent);
     }
 
     /**
@@ -191,18 +187,17 @@ public class ClientImpl implements Client {
      * Get full content, including meta and hash, from Joystick API by contentId.
      *
      * @param contentId content id in String format
-     * @param clazz     Class of config data
      * @param contentOptions optional parameters for getting Joystick content
      * @return Object representing full Joystick content
      */
     @Override
-    public <T> JoystickFullContent<T> getFullContent(final String contentId, Class<T> clazz,
+    public JoystickFullContent<JoystickContent> getFullContent(final String contentId,
                                                      final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId)
             .setFullResponse(true);
         final String content =  getContentsAsString(singleEndpoint, contentOptions);
         final JoystickFullContentJson rawObject = singleEndpoint.toObject(content, JoystickFullContentJson.class);
-        return new JoystickFullContent<>(singleEndpoint.toObject(rawObject.getData(), clazz),
+        return new JoystickFullContent<>( new JoystickContent(rawObject.getData()),
             rawObject.getMeta(), rawObject.getHash());
     }
 
@@ -233,14 +228,14 @@ public class ClientImpl implements Client {
      * @return map of configuration data by content id
      */
     @Override
-    public Map<String, JoystickData> getContents(final Collection<String> contentIds,
-                                                 final JoystickContentOptions contentOptions) {
+    public Map<String, JoystickContent> getContents(final Collection<String> contentIds,
+                                                    final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds);
         final String content =  getContentsAsString(multiEndpoint, contentOptions);
         final JsonNode jsonNode = multiEndpoint.toObject(content, JsonNode.class);
-        final Map<String, JoystickData> contentMap = new HashMap<>();
+        final Map<String, JoystickContent> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry ->
-            contentMap.put(nodeEntry.getKey(), new JoystickData(nodeEntry.getValue()))
+            contentMap.put(nodeEntry.getKey(), new JoystickContent(nodeEntry.getValue()))
         );
         return contentMap;
     }
@@ -275,16 +270,21 @@ public class ClientImpl implements Client {
      * @return map of full configuration data by content id
      */
     @Override
-    public Map<String, JoystickFullContentJson> getFullContents(final Collection<String> contentIds,
+    public Map<String, JoystickFullContent<JoystickContent>> getFullContents(final Collection<String> contentIds,
                                                                 final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds)
             .setFullResponse(true);
         final String content =  getContentsAsString(multiEndpoint, contentOptions);
         final JsonNode jsonNode = multiEndpoint.toObject(content, JsonNode.class);
-        final Map<String, JoystickFullContentJson> contentMap = new HashMap<>();
+        final Map<String, JoystickFullContent<JoystickContent>> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry -> {
-            JsonNode nodeValue = nodeEntry.getValue();
-            contentMap.put(nodeEntry.getKey(), multiEndpoint.toObject(nodeValue, JoystickFullContentJson.class));
+            final JsonNode nodeValue = nodeEntry.getValue();
+            final JoystickFullContentJson fullContentJson =
+                multiEndpoint.toObject(nodeValue, JoystickFullContentJson.class);
+            final JoystickContent joystickContent = new JoystickContent(fullContentJson.getData());
+            final JoystickFullContent<JoystickContent> joystickFullContent =
+                new JoystickFullContent<>(joystickContent, fullContentJson.getMeta(), fullContentJson.getHash());
+            contentMap.put(nodeEntry.getKey(), joystickFullContent);
         });
         return contentMap;
     }

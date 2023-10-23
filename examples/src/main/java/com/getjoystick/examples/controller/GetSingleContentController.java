@@ -1,10 +1,12 @@
 package com.getjoystick.examples.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.getjoystick.examples.model.ClientConfigDto;
 import com.getjoystick.sdk.Joystick;
 import com.getjoystick.sdk.client.Client;
 import com.getjoystick.sdk.client.ClientConfig;
+import com.getjoystick.sdk.models.JoystickContent;
 import com.getjoystick.sdk.models.JoystickFullContent;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,10 +19,11 @@ public class GetSingleContentController {
 
     @GetMapping("/single/content")
     public String getContent(@RequestParam final String apiKey,
-                                           @RequestParam final String contentId) {
+                             @RequestParam final String contentId) {
         ClientConfig config = ClientConfig.builder().setApiKey(apiKey).build();
         Client client = Joystick.create(config);
-        JsonNode jsonContent = client.getContent(contentId, JsonNode.class);
+        JoystickContent content = client.getContent(contentId);
+        JsonNode jsonContent = content.asJson();
 
         return jsonContent.toString();
     }
@@ -29,7 +32,7 @@ public class GetSingleContentController {
     public String getContentByClientConfig(
         @RequestParam final String apiKey,
         @RequestParam final String contentId,
-        @RequestBody(required = false) final ClientConfigDto clientConfigDto) {
+        @RequestBody(required = false) final ClientConfigDto clientConfigDto) throws JsonProcessingException {
         ClientConfig clientConfig = ClientConfig.builder().setApiKey(apiKey)
             .setUserId(clientConfigDto.getUserId())
             .setParams(clientConfigDto.getParams())
@@ -37,7 +40,8 @@ public class GetSingleContentController {
             .setSerialized(clientConfigDto.isSerialized())
             .build();
         Client client = Joystick.create(clientConfig);
-        JsonNode jsonContent = client.getContent(contentId, JsonNode.class);
+        JoystickContent content = client.getContent(contentId);
+        JsonNode jsonContent = content.asObject(JsonNode.class);
 
         return jsonContent.toString();
     }
@@ -54,9 +58,9 @@ public class GetSingleContentController {
             .setSerialized(clientConfigDto.isSerialized())
             .build();
         Client client = Joystick.create(clientConfig);
-        JoystickFullContent<JsonNode> jsonContent =
-            client.getFullContent(contentId, JsonNode.class);
+        JoystickFullContent<JoystickContent> jsonContent = client.getFullContent(contentId);
 
         return jsonContent.toString();
     }
+
 }

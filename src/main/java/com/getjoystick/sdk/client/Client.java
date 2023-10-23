@@ -2,9 +2,8 @@ package com.getjoystick.sdk.client;
 
 import com.getjoystick.sdk.errors.ApiUnknownException;
 import com.getjoystick.sdk.models.JoystickContentOptions;
-import com.getjoystick.sdk.models.JoystickData;
+import com.getjoystick.sdk.models.JoystickContent;
 import com.getjoystick.sdk.models.JoystickFullContent;
-import com.getjoystick.sdk.models.JoystickFullContentJson;
 import com.getjoystick.sdk.models.PublishData;
 import com.getjoystick.sdk.models.ResponseType;
 
@@ -20,16 +19,14 @@ import java.util.Map;
 public interface Client extends Closeable {
 
     /**
-     * Get content from Joystick API by contentId and class.
+     * Get content from Joystick API by contentId
      *
      * @param contentId content id in string format
-     * @param clazz Class of object to be returned
-     * @param <T> Type of object to be returned
-     * @return Joystick configuration as Java object specified by clazz parameter
+     * @return configuration content from Joystick
      * @throws ApiUnknownException if the response body does not contain valid JSON or
      *                             any unexpected {@link IOException} is thrown.
      */
-    <T> T getContent(String contentId, Class<T> clazz);
+    JoystickContent getContent(String contentId);
 
     /**
      * Get serialized content from Joystick API by contentId.
@@ -43,11 +40,9 @@ public interface Client extends Closeable {
      * Get full content, including meta and hash, from Joystick API by contentId.
      *
      * @param contentId content id in String format
-     * @param clazz Class of config data
      * @return Object representing full Joystick content
-     * @param <T> type of config data
      */
-    <T> JoystickFullContent<T> getFullContent(String contentId, Class<T> clazz);
+    JoystickFullContent<JoystickContent> getFullContent(String contentId);
 
     /**
      * Get full content, including meta and hash, from Joystick API by contentId. Config data is serialized.
@@ -63,7 +58,7 @@ public interface Client extends Closeable {
      * @param contentIds collection of content ids
      * @return map of configuration data by content id
      */
-    Map<String, JoystickData> getContents(Collection<String> contentIds);
+    Map<String, JoystickContent> getContents(Collection<String> contentIds);
 
     /**
      * Get map of serialized configurations for multiple content ids
@@ -79,7 +74,7 @@ public interface Client extends Closeable {
      * @param contentIds collection of content ids
      * @return map of full configuration data by content id
      */
-    Map<String, JoystickFullContentJson> getFullContents(Collection<String> contentIds);
+    Map<String, JoystickFullContent<JoystickContent>> getFullContents(Collection<String> contentIds);
 
     /**
      * Get map of configurations for multiple content ids
@@ -90,17 +85,15 @@ public interface Client extends Closeable {
     Map<String, JoystickFullContent<String>> getFullContentsSerialized(Collection<String> contentIds);
 
     /**
-     * Get content from Joystick API by contentId and class.
+     * Get content from Joystick API by contentId.
      *
      * @param contentId content id in string format
-     * @param clazz Class of object to be returned
-     * @param <T> Type of object to be returned
      * @param contentOptions optional parameters for getting Joystick content
-     * @return Joystick configuration as Java object specified by clazz parameter
+     * @return configuration content from Joystick
      * @throws ApiUnknownException if the response body does not contain valid JSON or
      *                             any unexpected {@link IOException} is thrown.
      */
-    <T> T getContent(String contentId, Class<T> clazz, JoystickContentOptions contentOptions);
+    JoystickContent getContent(String contentId, JoystickContentOptions contentOptions);
 
     /**
      * Get serialized content from Joystick API by contentId.
@@ -115,12 +108,10 @@ public interface Client extends Closeable {
      * Get full content, including meta and hash, from Joystick API by contentId.
      *
      * @param contentId content id in String format
-     * @param clazz Class of config data
      * @return Object representing full Joystick content
-     * @param <T> type of config data
      * @param contentOptions optional parameters for getting Joystick content
      */
-    <T> JoystickFullContent<T> getFullContent(String contentId, Class<T> clazz, JoystickContentOptions contentOptions);
+    JoystickFullContent<JoystickContent> getFullContent(String contentId, JoystickContentOptions contentOptions);
 
     /**
      * Get full content, including meta and hash, from Joystick API by contentId. Config data is serialized.
@@ -138,7 +129,7 @@ public interface Client extends Closeable {
      * @param contentOptions optional parameters for getting Joystick content
      * @return map of configuration data by content id
      */
-    Map<String, JoystickData> getContents(Collection<String> contentIds, JoystickContentOptions contentOptions);
+    Map<String, JoystickContent> getContents(Collection<String> contentIds, JoystickContentOptions contentOptions);
 
     /**
      * Get map of serialized configurations for multiple content ids
@@ -156,7 +147,7 @@ public interface Client extends Closeable {
      * @param contentOptions optional parameters for getting Joystick content
      * @return map of full configuration data by content id
      */
-    Map<String, JoystickFullContentJson> getFullContents(Collection<String> contentIds,
+    Map<String, JoystickFullContent<JoystickContent>> getFullContents(Collection<String> contentIds,
                                                          JoystickContentOptions contentOptions);
 
     /**
