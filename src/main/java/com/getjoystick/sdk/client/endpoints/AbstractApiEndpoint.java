@@ -9,7 +9,6 @@ import com.getjoystick.sdk.errors.ApiUnknownException;
 import com.getjoystick.sdk.errors.JoystickException;
 import com.getjoystick.sdk.models.RequestBody;
 import com.getjoystick.sdk.util.JoystickMapper;
-import lombok.NonNull;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.entity.HttpEntities;
 import org.apache.hc.core5.http.message.StatusLine;
@@ -40,12 +39,11 @@ public abstract class AbstractApiEndpoint {
      *
      * @return array of available query parameters.
      */
-    @NonNull
     public abstract NameValuePair[] getQueryParameters();
 
     public abstract JsonNode formatJsonResponse(JsonNode response);
 
-    public <T> T toObject(String content, Class<T> clazz) {
+    public <T> T toObject(final String content, final Class<T> clazz) {
         try {
             return JoystickMapper.readValue(content, clazz);
         } catch (JsonProcessingException e) {
@@ -53,7 +51,7 @@ public abstract class AbstractApiEndpoint {
         }
     }
 
-    public <T> T toObject(JsonNode content, Class<T> clazz) {
+    public <T> T toObject(final JsonNode content, final Class<T> clazz) {
         try {
             return JoystickMapper.treeToValue(content, clazz);
         } catch (JsonProcessingException e) {
@@ -89,10 +87,10 @@ public abstract class AbstractApiEndpoint {
      */
     public RequestBody getRequestBody(final String userId, final Map<Object, Object> parameters, final String semVer) {
         final RequestBody.RequestBodyBuilder bodyBuilder = RequestBody.builder();
-        bodyBuilder.setU(userId != null ? userId : "");
-        bodyBuilder.setP(parameters != null ? parameters : Collections.emptyMap());
+        bodyBuilder.setUserId(userId != null ? userId : "");
+        bodyBuilder.setParameters(parameters != null ? parameters : Collections.emptyMap());
         if (semVer != null && !semVer.isEmpty()) {
-            bodyBuilder.setV(semVer);
+            bodyBuilder.setSemanticVersion(semVer);
         }
         return bodyBuilder.build();
     }

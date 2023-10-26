@@ -50,7 +50,7 @@ public final class ApiCacheKeyUtil {
         return Hashing.sha256().hashString(hashString, StandardCharsets.UTF_8).toString();
     }
 
-    ApiCacheKeyUtil() {
+    /* default */ ApiCacheKeyUtil() {
         throw new IllegalStateException("Utility class.");
     }
 

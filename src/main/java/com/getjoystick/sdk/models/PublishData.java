@@ -9,17 +9,17 @@ import java.util.Arrays;
 @JsonInclude(Include.NON_NULL)
 public class PublishData {
     @JsonProperty("d")
-    String description;
+    private String description;
     @JsonProperty("c")
-    Object content;
+    private Object content;
     @JsonProperty("m")
-    Object[] dynamicContentMap;
+    private Object[] dynamicContentMap;
 
     private static Object[] defaultDynamicContentMap() {
         return new Object[0];
     }
 
-    PublishData(String description, Object content, Object[] dynamicContentMap) {
+    public PublishData(final String description, final Object content, final Object[] dynamicContentMap) {
         this.description = description;
         this.content = content;
         this.dynamicContentMap = dynamicContentMap;
@@ -42,61 +42,63 @@ public class PublishData {
     }
 
     @JsonProperty("d")
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
     @JsonProperty("c")
-    public void setContent(Object content) {
+    public void setContent(final Object content) {
         this.content = content;
     }
 
     @JsonProperty("m")
-    public void setDynamicContentMap(Object[] dynamicContentMap) {
+    public void setDynamicContentMap(final Object[] dynamicContentMap) {
         this.dynamicContentMap = dynamicContentMap;
     }
 
-    public boolean equals(Object o) {
-        if (o == this) {
+    @Override
+    public boolean equals(final Object object) {
+        if (object == this) {
             return true;
-        } else if (!(o instanceof PublishData)) {
-            return false;
-        } else {
-            PublishData other = (PublishData)o;
-            Object thisDescription = this.getDescription();
-            Object otherDescription = other.getDescription();
-            if (thisDescription == null) {
-                if (otherDescription != null) {
-                    return false;
-                }
-            } else if (!thisDescription.equals(otherDescription)) {
-                return false;
-            }
-
-            Object thisContent = this.getContent();
-            Object otherContent = other.getContent();
-            if (thisContent == null) {
-                if (otherContent != null) {
-                    return false;
-                }
-            } else if (!thisContent.equals(otherContent)) {
-                return false;
-            }
-
-            return Arrays.deepEquals(this.getDynamicContentMap(), other.getDynamicContentMap());
         }
+        if (!(object instanceof PublishData)) {
+            return false;
+        }
+        final PublishData other = (PublishData)object;
+        final Object thisDescription = this.getDescription();
+        final Object otherDescription = other.getDescription();
+        if (thisDescription == null) {
+            if (otherDescription != null) {
+                return false;
+            }
+        } else if (!thisDescription.equals(otherDescription)) {
+            return false;
+        }
+
+        final Object thisContent = this.getContent();
+        final Object otherContent = other.getContent();
+        if (thisContent == null) {
+            if (otherContent != null) {
+                return false;
+            }
+        } else if (!thisContent.equals(otherContent)) {
+            return false;
+        }
+
+        return Arrays.deepEquals(this.getDynamicContentMap(), other.getDynamicContentMap());
     }
 
+    @Override
     public int hashCode() {
         int result = 1;
-        Object descriptionObj = this.getDescription();
+        final Object descriptionObj = this.getDescription();
         result = result * 59 + (descriptionObj == null ? 43 : descriptionObj.hashCode());
-        Object contentObj = this.getContent();
+        final Object contentObj = this.getContent();
         result = result * 59 + (contentObj == null ? 43 : contentObj.hashCode());
         result = result * 59 + Arrays.deepHashCode(this.getDynamicContentMap());
         return result;
     }
-
+    @Override
     public String toString() {
         return "PublishData(description=" + this.getDescription() + ", content=" + this.getContent() + ", dynamicContentMap=" + Arrays.deepToString(this.getDynamicContentMap()) + ")";
     }
@@ -104,28 +106,28 @@ public class PublishData {
     public static class PublishDataBuilder {
         private String description;
         private Object content;
-        private boolean dynamicContentMapSet;
-        private Object[] dynamicContentMapValue;
+        private boolean dynamicContentSet;
+        private Object[] dynamicContentValue;
 
-        PublishDataBuilder() {
+        /* default */ PublishDataBuilder() {
         }
 
         @JsonProperty("d")
-        public PublishDataBuilder setDescription(String description) {
+        public PublishDataBuilder setDescription(final String description) {
             this.description = description;
             return this;
         }
 
         @JsonProperty("c")
-        public PublishDataBuilder setContent(Object content) {
+        public PublishDataBuilder setContent(final Object content) {
             this.content = content;
             return this;
         }
 
         @JsonProperty("m")
-        public PublishDataBuilder setDynamicContentMap(Object[] dynamicContentMap) {
-            this.dynamicContentMapValue = dynamicContentMap;
-            this.dynamicContentMapSet = true;
+        public PublishDataBuilder setDynamicContentMap(final Object[] dynamicContentMap) {
+            this.dynamicContentValue = dynamicContentMap;
+            this.dynamicContentSet = true;
             return this;
         }
 
@@ -133,7 +135,7 @@ public class PublishData {
             if (description == null) {
                 throw new ConfigurationException("Description is not provided.");
             } else {
-                int length = description.trim().length();
+                final int length = description.trim().length();
                 if (length >= 1 && length <= 50) {
                     if (content == null) {
                         throw new ConfigurationException("Content is not provided.");
@@ -142,16 +144,17 @@ public class PublishData {
                     throw new ConfigurationException("There must be more than 0 and no more than 50 symbols in the description.");
                 }
             }
-            Object[] thisDynamicContentMapValue = this.dynamicContentMapValue;
-            if (!this.dynamicContentMapSet) {
-                thisDynamicContentMapValue = PublishData.defaultDynamicContentMap();
+            Object[] thisDynamicContVal = this.dynamicContentValue;
+            if (!this.dynamicContentSet) {
+                thisDynamicContVal = PublishData.defaultDynamicContentMap();
             }
 
-            return new PublishData(this.description, this.content, thisDynamicContentMapValue);
+            return new PublishData(this.description, this.content, thisDynamicContVal);
         }
 
+        @Override
         public String toString() {
-            return "PublishData.PublishDataBuilder(description=" + this.description + ", content=" + this.content + ", dynamicContentMap$value=" + Arrays.deepToString(this.dynamicContentMapValue) + ")";
+            return "PublishData.PublishDataBuilder(description=" + this.description + ", content=" + this.content + ", dynamicContentMap$value=" + Arrays.deepToString(this.dynamicContentValue) + ")";
         }
     }
 }

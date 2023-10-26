@@ -10,9 +10,6 @@ import com.getjoystick.sdk.errors.ConfigurationException;
 import com.getjoystick.sdk.errors.MultipleContentsApiException;
 import com.getjoystick.sdk.util.ApiCacheKeyUtil;
 import com.getjoystick.sdk.util.JoystickMapper;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 
@@ -21,7 +18,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Accessors(chain = true)
 public class MultipleContentEndpoint extends AbstractApiEndpoint {
 
     private static final String PARAM_CONTENT_IDS = "c";
@@ -29,9 +25,9 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
     private static final String MULTI_CONFIG_URL = "https://api.getjoystick.com/api/v1/combine/";
 
     private final Collection<String> contentIds;
-    @Setter
+
     private boolean serialized;
-    @Setter
+
     private boolean fullResponse;
 
     public MultipleContentEndpoint(final ClientConfig config, final Collection<String> contentIds) {
@@ -55,7 +51,7 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
     }
 
     @Override
-    public @NonNull NameValuePair[] getQueryParameters() {
+    public NameValuePair[] getQueryParameters() {
         final Collection<NameValuePair> qParams = new ArrayList<>();
         qParams.add(new BasicNameValuePair(PARAM_DYNAMIC, "true"));
         if (isSerialized()) {
@@ -100,7 +96,7 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
             }
         });
         if(!errorMap.isEmpty()) {
-            String errorBuffer = "Response from remote server contains errors:" + System.lineSeparator() +
+            final String errorBuffer = "Response from remote server contains errors:" + System.lineSeparator() +
                 new ObjectNode(JsonNodeFactory.instance, errorMap).toPrettyString();
             throw new MultipleContentsApiException(errorBuffer);
         }
@@ -116,5 +112,15 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
             }
         });
         return new ObjectNode(JsonNodeFactory.instance, dataByContentId);
+    }
+
+    public MultipleContentEndpoint setSerialized(final boolean serialized) {
+        this.serialized = serialized;
+        return this;
+    }
+
+    public MultipleContentEndpoint setFullResponse(final boolean fullResponse) {
+        this.fullResponse = fullResponse;
+        return this;
     }
 }

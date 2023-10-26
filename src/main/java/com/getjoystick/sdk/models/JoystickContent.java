@@ -6,7 +6,7 @@ import com.getjoystick.sdk.util.JoystickMapper;
 
 public class JoystickContent {
 
-    private JsonNode content;
+    private final JsonNode content;
 
     public JoystickContent(final JsonNode content) {
         this.content = content;
@@ -29,7 +29,7 @@ public class JoystickContent {
         final JsonNode childNode = content.get(index);
         return childNode == null ? null : new JoystickContent(childNode);
     }
-
+    @Override
     public String toString() {
         return "JoystickData(data=" + this.content + ")";
     }

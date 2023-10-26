@@ -5,7 +5,6 @@ import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ConfigurationException;
 import com.getjoystick.sdk.models.PublishData;
 import com.getjoystick.sdk.util.JoystickMapper;
-import lombok.NonNull;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
@@ -38,12 +37,12 @@ public class PublishUpdateEndpoint extends AbstractApiEndpoint {
     }
 
     @Override
-    public String getContentHash(ClientConfig config) {
+    public String getContentHash(final ClientConfig config) {
         throw new UnsupportedOperationException("Method is not implemented");
     }
 
     @Override
-    public @NonNull NameValuePair[] getQueryParameters() {
+    public NameValuePair[] getQueryParameters() {
         return new NameValuePair[0];
     }
 
@@ -59,7 +58,7 @@ public class PublishUpdateEndpoint extends AbstractApiEndpoint {
     }
 
     @Override
-    public JsonNode processResponse(ClassicHttpResponse response) throws IOException {
+    public JsonNode processResponse(final ClassicHttpResponse response) throws IOException {
         processCommonResponseErrors(response);
         return parseResponseToJson(response);
     }

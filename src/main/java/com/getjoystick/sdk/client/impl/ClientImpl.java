@@ -71,7 +71,7 @@ public class ClientImpl implements Client {
      *                             any unexpected {@link IOException} is thrown.
      */
     @Override
-    public JoystickContent getContent(String contentId) {
+    public JoystickContent getContent(final String contentId) {
         return getContent(contentId, new JoystickContentOptions(false));
     }
 
@@ -82,7 +82,7 @@ public class ClientImpl implements Client {
      * @return Joystick configuration serialized as String
      */
     @Override
-    public String getContentSerialized(String contentId) {
+    public String getContentSerialized(final String contentId) {
         return getContentSerialized(contentId, new JoystickContentOptions(false));
     }
 
@@ -93,7 +93,7 @@ public class ClientImpl implements Client {
      * @return Object representing full Joystick content
      */
     @Override
-    public JoystickFullContent<JoystickContent> getFullContent(String contentId) {
+    public JoystickFullContent<JoystickContent> getFullContent(final String contentId) {
         return getFullContent(contentId, new JoystickContentOptions(false));
     }
 
@@ -104,7 +104,7 @@ public class ClientImpl implements Client {
      * @return bject representing full Joystick content, where config data is serialized to string
      */
     @Override
-    public JoystickFullContent<String> getFullContentSerialized(String contentId) {
+    public JoystickFullContent<String> getFullContentSerialized(final String contentId) {
         return getFullContentSerialized(contentId, new JoystickContentOptions(false));
     }
 
@@ -115,7 +115,7 @@ public class ClientImpl implements Client {
      * @return map of configuration data by content id
      */
     @Override
-    public Map<String, JoystickContent> getContents(Collection<String> contentIds) {
+    public Map<String, JoystickContent> getContents(final Collection<String> contentIds) {
         return getContents(contentIds, new JoystickContentOptions(false));
     }
 
@@ -127,7 +127,7 @@ public class ClientImpl implements Client {
      * @return map of serialized to string configuration data by content id
      */
     @Override
-    public Map<String, String> getContentsSerialized(Collection<String> contentIds) {
+    public Map<String, String> getContentsSerialized(final Collection<String> contentIds) {
         return getContentsSerialized(contentIds, new JoystickContentOptions(false));
     }
 
@@ -138,7 +138,7 @@ public class ClientImpl implements Client {
      * @return map of full configuration data by content id
      */
     @Override
-    public Map<String, JoystickFullContent<JoystickContent>> getFullContents(Collection<String> contentIds) {
+    public Map<String, JoystickFullContent<JoystickContent>> getFullContents(final Collection<String> contentIds) {
         return getFullContents(contentIds, new JoystickContentOptions(false));
     }
 
@@ -149,7 +149,7 @@ public class ClientImpl implements Client {
      * @return map of full content where data config is serialized to string
      */
     @Override
-    public Map<String, JoystickFullContent<String>> getFullContentsSerialized(Collection<String> contentIds) {
+    public Map<String, JoystickFullContent<String>> getFullContentsSerialized(final Collection<String> contentIds) {
         return getFullContentsSerialized(contentIds, new JoystickContentOptions(false));
     }
 
@@ -178,7 +178,7 @@ public class ClientImpl implements Client {
      * @return Joystick configuration serialized as String
      */
     @Override
-    public String getContentSerialized(String contentId, JoystickContentOptions contentOptions) {
+    public String getContentSerialized(final String contentId, final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId).setSerialized(true);
         return getContentsAsString(singleEndpoint, contentOptions);
     }
@@ -256,7 +256,7 @@ public class ClientImpl implements Client {
         final JsonNode jsonNode = multiEndpoint.toObject(content, JsonNode.class);
         final Map<String, String> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry -> {
-            JsonNode nodeValue = nodeEntry.getValue();
+            final JsonNode nodeValue = nodeEntry.getValue();
             contentMap.put(nodeEntry.getKey(), nodeValue != null ? nodeValue.toString() : null);
         });
         return contentMap;
@@ -306,7 +306,7 @@ public class ClientImpl implements Client {
         final JsonNode jsonNode = multiEndpoint.toObject(content, JsonNode.class);
         final Map<String, JoystickFullContent<String>> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry -> {
-            JsonNode nodeValue = nodeEntry.getValue();
+            final JsonNode nodeValue = nodeEntry.getValue();
             final JoystickFullContentJson rawObject = multiEndpoint.toObject(nodeValue, JoystickFullContentJson.class);
             final JoystickFullContent<String> joystickFullContent =
                 new JoystickFullContent<>(rawObject.getData().toString(), rawObject.getMeta(), rawObject.getHash());
@@ -410,7 +410,7 @@ public class ClientImpl implements Client {
      * @param data includes data to be updated in Joystick
      */
     @Override
-    public void publishContentUpdate(String contentId, PublishData data) {
+    public void publishContentUpdate(final String contentId, final PublishData data) {
         if (contentId == null || contentId.trim().isEmpty()) {
             throw new IllegalArgumentException("No Content ID provided.");
         }

@@ -24,7 +24,7 @@ public class JoystickMapper {
             .build();
     }
 
-    JoystickMapper() {
+    /* default */ JoystickMapper() {
         throw new IllegalStateException("Utility class.");
     }
 
@@ -48,12 +48,12 @@ public class JoystickMapper {
         return OBJECT_MAPPER.readTree(input);
     }
 
-    public static void writeValue(OutputStream outputStream, Object value)
+    public static void writeValue(final OutputStream outputStream, final Object value)
         throws IOException {
         OBJECT_MAPPER.writeValue(outputStream, value);
     }
 
-    public static String writeValueAsString(Object value) throws JsonProcessingException{
+    public static String writeValueAsString(final Object value) throws JsonProcessingException{
         return OBJECT_MAPPER.writeValueAsString(value);
     }
 }

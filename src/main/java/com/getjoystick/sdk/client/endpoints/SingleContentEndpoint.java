@@ -4,23 +4,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ConfigurationException;
 import com.getjoystick.sdk.util.ApiCacheKeyUtil;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
 import java.util.Collection;
-@Accessors(chain = true)
 public class SingleContentEndpoint extends AbstractApiEndpoint {
 
     private static final String SINGLE_CONFIG_URL = "https://api.getjoystick.com/api/v1/config/%s/dynamic";
 
-    private String contentId;
-    @Setter
+    private final String contentId;
     private boolean serialized;
-    @Setter
     private boolean fullResponse;
 
     public SingleContentEndpoint(final ClientConfig config, final String contentId) {
@@ -60,7 +54,7 @@ public class SingleContentEndpoint extends AbstractApiEndpoint {
      * @return array of parameters as NameValuePair
      */
     @Override
-    public @NonNull NameValuePair[] getQueryParameters() {
+    public NameValuePair[] getQueryParameters() {
         final Collection<NameValuePair> qParams = new ArrayList<>();
         if (isSerialized()) {
             qParams.add(new BasicNameValuePair(PARAM_RESP_TYPE, "serialized"));
@@ -77,5 +71,15 @@ public class SingleContentEndpoint extends AbstractApiEndpoint {
     @Override
     public JsonNode formatJsonResponse(final JsonNode jsonNode) {
         return fullResponse ? jsonNode : jsonNode.findValue(NODE_DATA);
+    }
+
+    public SingleContentEndpoint setSerialized(final boolean serialized) {
+        this.serialized = serialized;
+        return this;
+    }
+
+    public SingleContentEndpoint setFullResponse(final boolean fullResponse) {
+        this.fullResponse = fullResponse;
+        return this;
     }
 }

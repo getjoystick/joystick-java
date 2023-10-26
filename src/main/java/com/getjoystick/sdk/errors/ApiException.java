@@ -1,9 +1,17 @@
 package com.getjoystick.sdk.errors;
 
-import lombok.experimental.StandardException;
-
-@StandardException
 public class ApiException extends JoystickException {
     private static final long serialVersionUID = -1L;
+
+    public ApiException(final String message) {
+        this(message, null);
+    }
+
+    public ApiException(final String message, final Throwable cause) {
+        super(message);
+        if (cause != null) {
+            super.initCause(cause);
+        }
+    }
 
 }

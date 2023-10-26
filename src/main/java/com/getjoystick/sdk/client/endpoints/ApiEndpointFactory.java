@@ -8,7 +8,7 @@ public class ApiEndpointFactory {
 
     private static final int ONE = 1;
 
-    ApiEndpointFactory() {
+    /* default */ ApiEndpointFactory() {
         throw new IllegalStateException("Static factory class.");
     }
 

@@ -28,7 +28,9 @@ public class ClientConfig {
         return new ApiCacheLRU<>();
     }
 
-    ClientConfig(String userId, String apiKey, String semVer, Map<Object, Object> params, int cacheTTL, boolean serialized, ApiCache<String, String> cache) {
+    /* default */ ClientConfig(final String userId, final String apiKey, final String semVer,
+                               final Map<Object, Object> params, final int cacheTTL,
+                               final boolean serialized, final ApiCache<String, String> cache) {
         this.userId = userId;
         this.apiKey = apiKey;
         this.semVer = semVer;
@@ -66,112 +68,117 @@ public class ClientConfig {
         return this.cache;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(final String userId) {
         this.userId = userId;
     }
 
-    public void setApiKey(String apiKey) {
+    public void setApiKey(final String apiKey) {
         this.apiKey = apiKey;
     }
 
-    public void setSemVer(String semVer) {
+    public void setSemVer(final String semVer) {
         this.semVer = semVer;
     }
 
-    public void setParams(Map<Object, Object> params) {
+    public void setParams(final Map<Object, Object> params) {
         this.params = params;
     }
 
-    public void setCacheTTL(int cacheTTL) {
+    public void setCacheTTL(final int cacheTTL) {
         this.cacheTTL = cacheTTL;
     }
 
-    public void setSerialized(boolean serialized) {
+    public void setSerialized(final boolean serialized) {
         this.serialized = serialized;
     }
 
-    public void setCache(ApiCache<String, String> cache) {
+    public void setCache(final ApiCache<String, String> cache) {
         this.cache = cache;
     }
 
-    public boolean equals(Object o) {
-        if (o == this) {
+    @Override
+    public boolean equals(final Object object) {
+        if (object == this) {
             return true;
-        } else if (!(o instanceof ClientConfig)) {
-            return false;
-        } else {
-            ClientConfig other = (ClientConfig)o;
-            if (this.getCacheTTL() != other.getCacheTTL()) {
-                return false;
-            } else if (this.isSerialized() != other.isSerialized()) {
-                return false;
-            } else {
-                Object thisUserId = this.getUserId();
-                Object otherUserId = other.getUserId();
-                if (thisUserId == null) {
-                    if (otherUserId != null) {
-                        return  false;
-                    }
-                } else if (!thisUserId.equals(otherUserId)) {
-                    return false;
-                }
-
-                Object thisApiKey = this.getApiKey();
-                Object otherApiKey = other.getApiKey();
-                if (thisApiKey == null) {
-                    if (otherApiKey != null) {
-                        return false;
-                    }
-                } else if (!thisApiKey.equals(otherApiKey)) {
-                    return false;
-                }
-
-                Object thisSemVer = this.getSemVer();
-                Object otherSemVer = other.getSemVer();
-                if (thisSemVer == null) {
-                    if (otherSemVer != null) {
-                        return false;
-                    }
-                } else if (!thisSemVer.equals(otherSemVer)) {
-                    return false;
-                }
-
-                Object thisParams = this.getParams();
-                Object otherParams = other.getParams();
-                if (thisParams == null) {
-                    if (otherParams != null) {
-                        return false;
-                    }
-                } else if (!thisParams.equals(otherParams)) {
-                    return false;
-                }
-
-                Object thisCache = this.getCache();
-                Object otherCache = other.getCache();
-                if (thisCache == null) {
-                    return otherCache == null;
-                } else return thisCache.equals(otherCache);
-            }
         }
+        if (!(object instanceof ClientConfig)) {
+            return false;
+        }
+        final ClientConfig other = (ClientConfig)object;
+        if (this.getCacheTTL() != other.getCacheTTL()) {
+            return false;
+        }
+        if (this.isSerialized() != other.isSerialized()) {
+            return false;
+        }
+
+        final Object thisUserId = this.getUserId();
+        final Object otherUserId = other.getUserId();
+        if (thisUserId == null) {
+            if (otherUserId != null) {
+                return  false;
+            }
+        } else if (!thisUserId.equals(otherUserId)) {
+            return false;
+        }
+
+        final Object thisApiKey = this.getApiKey();
+        final Object otherApiKey = other.getApiKey();
+        if (thisApiKey == null) {
+            if (otherApiKey != null) {
+                return false;
+            }
+        } else if (!thisApiKey.equals(otherApiKey)) {
+            return false;
+        }
+
+        final Object thisSemVer = this.getSemVer();
+        final Object otherSemVer = other.getSemVer();
+        if (thisSemVer == null) {
+            if (otherSemVer != null) {
+                return false;
+            }
+        } else if (!thisSemVer.equals(otherSemVer)) {
+            return false;
+        }
+
+        final Object thisParams = this.getParams();
+        final Object otherParams = other.getParams();
+        if (thisParams == null) {
+            if (otherParams != null) {
+                return false;
+            }
+        } else if (!thisParams.equals(otherParams)) {
+            return false;
+        }
+
+        final Object thisCache = this.getCache();
+        final Object otherCache = other.getCache();
+        if (thisCache == null) {
+            return otherCache == null;
+        }
+        return thisCache.equals(otherCache);
     }
 
+    @Override
     public int hashCode() {
         int result = 1;
         result = result * 59 + this.getCacheTTL();
         result = result * 59 + (this.isSerialized() ? 79 : 97);
-        Object userIdObj = this.getUserId();
+        final Object userIdObj = this.getUserId();
         result = result * 59 + (userIdObj == null ? 43 : userIdObj.hashCode());
-        Object apiKeyObj = this.getApiKey();
+        final Object apiKeyObj = this.getApiKey();
         result = result * 59 + (apiKeyObj == null ? 43 : apiKeyObj.hashCode());
-        Object semVerObj = this.getSemVer();
+        final Object semVerObj = this.getSemVer();
         result = result * 59 + (semVerObj == null ? 43 : semVerObj.hashCode());
-        Object paramsObj = this.getParams();
+        final Object paramsObj = this.getParams();
         result = result * 59 + (paramsObj == null ? 43 : paramsObj.hashCode());
-        Object cacheObj = this.getCache();
+        final Object cacheObj = this.getCache();
         result = result * 59 + (cacheObj == null ? 43 : cacheObj.hashCode());
         return result;
     }
 
+    @Override
     public String toString() {
         return "ClientConfig(userId=" + this.getUserId() + ", apiKey=" + this.getApiKey() + ", semVer=" + this.getSemVer() + ", params=" + this.getParams() + ", cacheTTL=" + this.getCacheTTL() + ", serialized=" + this.isSerialized() + ", cache=" + this.getCache() + ")";
     }
@@ -188,42 +195,42 @@ public class ClientConfig {
         private boolean cacheSet;
         private ApiCache<String, String> cacheValue;
 
-        ClientConfigBuilder() {
+        /* default */ ClientConfigBuilder() {
         }
 
-        public ClientConfigBuilder setUserId(String userId) {
+        public ClientConfigBuilder setUserId(final String userId) {
             this.userIdValue = userId;
             this.userIdSet = true;
             return this;
         }
 
-        public ClientConfigBuilder setApiKey(String apiKey) {
+        public ClientConfigBuilder setApiKey(final String apiKey) {
             this.apiKey = apiKey;
             return this;
         }
 
-        public ClientConfigBuilder setSemVer(String semVer) {
+        public ClientConfigBuilder setSemVer(final String semVer) {
             this.semVer = semVer;
             return this;
         }
 
-        public ClientConfigBuilder setParams(Map<Object, Object> params) {
+        public ClientConfigBuilder setParams(final Map<Object, Object> params) {
             this.paramsValue = params;
             this.paramsSet = true;
             return this;
         }
 
-        public ClientConfigBuilder setCacheTTL(int cacheTTL) {
+        public ClientConfigBuilder setCacheTTL(final int cacheTTL) {
             this.cacheTTL = cacheTTL;
             return this;
         }
 
-        public ClientConfigBuilder setSerialized(boolean serialized) {
+        public ClientConfigBuilder setSerialized(final boolean serialized) {
             this.serialized = serialized;
             return this;
         }
 
-        public ClientConfigBuilder setCache(ApiCache<String, String> cache) {
+        public ClientConfigBuilder setCache(final ApiCache<String, String> cache) {
             this.cacheValue = cache;
             this.cacheSet = true;
             return this;
@@ -248,6 +255,7 @@ public class ClientConfig {
             return new ClientConfig(thisUserIdValue, this.apiKey, this.semVer, thisParamsValue, this.cacheTTL, this.serialized, thisCacheValue);
         }
 
+        @Override
         public String toString() {
             return "ClientConfig.ClientConfigBuilder(userId$value=" + this.userIdValue + ", apiKey=" + this.apiKey + ", semVer=" + this.semVer + ", params$value=" + this.paramsValue + ", cacheTTL=" + this.cacheTTL + ", serialized=" + this.serialized + ", cache$value=" + this.cacheValue + ")";
         }
@@ -258,28 +266,29 @@ public class ClientConfig {
         private static final Pattern SEM_VER_PATTERN = Pattern.compile(SEM_VER_REGEXP);
 
         private OverridedClientConfigBuilder() {
+            super();
         }
 
-        private void validateSemVersion(String version) {
+        private void validateSemVersion(final String version) {
             if (version != null && !SEM_VER_PATTERN.matcher(version).matches()) {
                 throw new ConfigurationException("The semantic version [" + version + "] is incorrect.");
             }
         }
 
-        private void validateCacheTTL(int seconds) {
+        private void validateCacheTTL(final int seconds) {
             if (seconds < 0) {
                 throw new ConfigurationException("Cache expiration time must be defined as seconds and must be positive.");
             }
         }
 
         @Override
-        public ClientConfigBuilder setSemVer(String semVer) {
+        public ClientConfigBuilder setSemVer(final String semVer) {
             this.validateSemVersion(semVer);
             return super.setSemVer(semVer);
         }
 
         @Override
-        public ClientConfigBuilder setCacheTTL(int cacheTTL) {
+        public ClientConfigBuilder setCacheTTL(final int cacheTTL) {
             this.validateCacheTTL(cacheTTL);
             return super.setCacheTTL(cacheTTL);
         }

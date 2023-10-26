@@ -19,7 +19,7 @@ public final class Joystick {
         return new ClientImpl(config);
     }
 
-    Joystick() {
+    /* default */ Joystick() {
         throw new UnsupportedOperationException("Unable to instantiate a Base SDK class.");
     }
 

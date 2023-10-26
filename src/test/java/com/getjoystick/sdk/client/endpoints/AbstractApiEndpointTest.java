@@ -34,7 +34,6 @@ class AbstractApiEndpointTest {
 
     @Test
     void prepareRequestEntity_multipleContentIdsNoParams_defaultRequestBody() throws IOException {
-        final ClientConfig config = ClientConfig.builder().setApiKey(API_KEY).build();
         final AbstractApiEndpoint apiEndpoint = new MultipleContentEndpoint(CONFIG, ImmutableSet.of("id1", "id2"));
         HttpEntity requestEntity = apiEndpoint.prepareRequestEntity();
         assertEquals("application/json; charset=UTF-8", requestEntity.getContentType());

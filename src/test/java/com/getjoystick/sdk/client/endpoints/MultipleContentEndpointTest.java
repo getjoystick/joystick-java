@@ -42,9 +42,9 @@ class MultipleContentEndpointTest {
             .setSerialized(true);
         RequestBody requestBody = multipleConfigsApiEndpoint
             .getRequestBody("userId", ImmutableMap.of("p_key1", "p_value1"), "1.1");
-        assertEquals("userId", requestBody.getU());
-        assertEquals(ImmutableMap.of("p_key1", "p_value1"), requestBody.getP());
-        assertEquals("1.1", requestBody.getV());
+        assertEquals("userId", requestBody.getUserId());
+        assertEquals(ImmutableMap.of("p_key1", "p_value1"), requestBody.getParameters());
+        assertEquals("1.1", requestBody.getSemanticVersion());
     }
 
     @Test
@@ -55,9 +55,9 @@ class MultipleContentEndpointTest {
         RequestBody expectedResult = RequestBody.builder().build();
         RequestBody requestBody = multipleConfigsApiEndpoint
             .getRequestBody(null, null, null);
-        assertEquals("", requestBody.getU());
-        assertEquals(ImmutableMap.of(), requestBody.getP());
-        assertNull(requestBody.getV());
+        assertEquals("", requestBody.getUserId());
+        assertEquals(ImmutableMap.of(), requestBody.getParameters());
+        assertNull(requestBody.getSemanticVersion());
         assertEquals(expectedResult, requestBody);
     }
 

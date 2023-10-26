@@ -10,7 +10,7 @@ public class JoystickContentOptions {
      */
     private boolean refresh;
 
-    public JoystickContentOptions(boolean refresh) {
+    public JoystickContentOptions(final boolean refresh) {
         this.refresh = refresh;
     }
 
@@ -18,7 +18,7 @@ public class JoystickContentOptions {
         return refresh;
     }
 
-    public void setRefresh(boolean refresh) {
+    public void setRefresh(final boolean refresh) {
         this.refresh = refresh;
     }
 
