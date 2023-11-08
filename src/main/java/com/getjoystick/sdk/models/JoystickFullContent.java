@@ -1,6 +1,19 @@
 package com.getjoystick.sdk.models;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.getjoystick.sdk.util.JoystickMapper;
+
+import static com.getjoystick.sdk.util.JoystickMapper.removeTrailingQuotes;
+
 public class JoystickFullContent<T> {
+
+    private static final String DATA_FIELD = "data";
+
+    private static final String META_FIELD = "meta";
+
+    private static final String HASH_FIELD = "hash";
+
+    private String dataString;
 
     private T data;
 
@@ -8,10 +21,36 @@ public class JoystickFullContent<T> {
 
     private String hash;
 
-    public JoystickFullContent(final T data, final JoystickMeta meta, final String hash) {
+    public JoystickFullContent() {}
+
+    public JoystickFullContent(final T data, final String dataString, final JoystickMeta meta, final String hash) {
         this.data = data;
+        this.dataString = dataString;
         this.meta = meta;
         this.hash = hash;
+    }
+
+    public JoystickFullContent(final String content, final boolean isSerialized) {
+        final JsonNode jsonContent = JoystickMapper.readTree(content);
+        if(isSerialized) {
+            this.data = (T) removeTrailingQuotes(jsonContent.get(DATA_FIELD).toString());
+        } else {
+            this.data = (T) new JoystickContent(jsonContent.get(DATA_FIELD));
+        }
+        this.dataString = content;
+        this.meta = JoystickMapper.treeToValue(jsonContent.get(META_FIELD), JoystickMeta.class);
+        this.hash = jsonContent.get(HASH_FIELD).asText();
+    }
+
+    public JoystickFullContent(final JsonNode jsonContent, final boolean isSerialized) {
+        if(isSerialized) {
+            this.data = (T) removeTrailingQuotes(jsonContent.get(DATA_FIELD).toString());
+        } else {
+            this.data = (T) new JoystickContent(jsonContent.get(DATA_FIELD));
+        }
+        this.dataString = removeTrailingQuotes(jsonContent.toString());
+        this.meta = JoystickMapper.treeToValue(jsonContent.get(META_FIELD), JoystickMeta.class);
+        this.hash = jsonContent.get(HASH_FIELD).asText();
     }
 
     public T getData() {
@@ -90,7 +129,7 @@ public class JoystickFullContent<T> {
 
     @Override
     public String toString() {
-        return "JoystickFullContent(data=" + this.getData() + ", meta=" + this.getMeta() + ", hash=" + this.getHash() + ")";
+        return dataString;
     }
 
 }

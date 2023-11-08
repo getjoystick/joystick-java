@@ -1,12 +1,10 @@
 package com.getjoystick.sdk.client.endpoints;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ApiBadRequestException;
 import com.getjoystick.sdk.errors.ApiServerException;
 import com.getjoystick.sdk.errors.ApiUnknownException;
-import com.getjoystick.sdk.errors.JoystickException;
 import com.getjoystick.sdk.models.RequestBody;
 import com.getjoystick.sdk.util.JoystickMapper;
 import org.apache.hc.core5.http.*;
@@ -42,23 +40,6 @@ public abstract class AbstractApiEndpoint {
     public abstract NameValuePair[] getQueryParameters();
 
     public abstract JsonNode formatJsonResponse(JsonNode response);
-
-    public <T> T toObject(final String content, final Class<T> clazz) {
-        try {
-            return JoystickMapper.readValue(content, clazz);
-        } catch (JsonProcessingException e) {
-            throw new JoystickException("Unable to convert Joystick response to " + clazz, e);
-        }
-    }
-
-    public <T> T toObject(final JsonNode content, final Class<T> clazz) {
-        try {
-            return JoystickMapper.treeToValue(content, clazz);
-        } catch (JsonProcessingException e) {
-            throw new JoystickException("Unable to convert Joystick response to " + clazz, e);
-        }
-    }
-
 
     public JsonNode parseResponseToJson(final ClassicHttpResponse response) throws IOException {
         try (HttpEntity responseEntity = response.getEntity()) {

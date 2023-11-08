@@ -66,4 +66,11 @@ class SingleConfigApiEndpointTest {
             () -> new SingleContentEndpoint(CONFIG, ""));
         assertEquals( "Content ID is not provided.", error.getMessage());
     }
+
+    @Test
+    void build_nullConfig_exceptionIsThrown() {
+        final ConfigurationException error = assertThrows(ConfigurationException.class,
+            () -> new SingleContentEndpoint(null, "123"));
+        assertEquals( "Config is not provided.", error.getMessage());
+    }
 }

@@ -60,7 +60,7 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
         try {
             qParams.add(new BasicNameValuePair(PARAM_CONTENT_IDS, JoystickMapper.writeValueAsString(contentIds)));
         } catch (JsonProcessingException e) {
-            throw new ConfigurationException(e);
+            throw new ConfigurationException("Not able to add contentIds to URL", e);
         }
         return qParams.toArray(new NameValuePair[0]);
     }

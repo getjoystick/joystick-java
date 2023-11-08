@@ -1,0 +1,32 @@
+{
+    "horror_config": {
+        "data": {
+            "level": 133,
+            "mode": "Hard",
+            "age": 18,
+            "price": 33.99
+        },
+        "hash": "e10325c5",
+        "meta": {
+            "uid": 0,
+            "mod": 0,
+            "variants": [],
+            "seg": []
+        }
+    },
+    "race_config": {
+        "data": {
+            "speed": 20,
+            "name": "Turbo",
+            "size": 245,
+            "price": 22.99
+        },
+        "hash": "c272ef04",
+        "meta": {
+            "uid": 0,
+            "mod": 0,
+            "variants": [],
+            "seg": []
+        }
+    }
+}

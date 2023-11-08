@@ -223,5 +223,4 @@ class ClientImplTest {
             verify(httpClient).execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
         }
     }
-
 }

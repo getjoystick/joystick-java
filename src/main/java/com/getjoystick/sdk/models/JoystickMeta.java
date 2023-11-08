@@ -11,6 +11,8 @@ public class JoystickMeta {
 
     private List<Object> seg;
 
+    public JoystickMeta() {}
+
     public JoystickMeta(final Long uid, final Long mod, final List<Object> variants, final List<Object> seg) {
         this.uid = uid;
         this.mod = mod;

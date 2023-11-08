@@ -1,6 +1,5 @@
 package com.getjoystick.sdk.client.endpoints;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ConfigurationException;
@@ -76,7 +75,14 @@ class MultipleContentEndpointTest {
     }
 
     @Test
-    void formatJsonResponse_fullResponseWithoutErrors_fullResponseReturned() throws JsonProcessingException {
+    void build_nullConfig_exceptionIsThrown() {
+        final ConfigurationException error = assertThrows(ConfigurationException.class,
+            () -> new MultipleContentEndpoint(null, ImmutableSet.of("111")));
+        assertEquals( "Config is not provided.", error.getMessage());
+    }
+
+    @Test
+    void formatJsonResponse_fullResponseWithoutErrors_fullResponseReturned() {
         final JsonNode jsonNode = JoystickMapper.readTree("{\"dev_test_001\":{\"data\":{\"config_name\":\"initial-test-config-dev-001\"}," +
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}," +
             "\"dev_test_002\":{\"data\":{\"config_name\":\"initial-test-config-dev-002\"}," +
@@ -90,7 +96,7 @@ class MultipleContentEndpointTest {
     }
 
     @Test
-    void formatJsonResponse_fullResponseWithErrors_multipleContentsApiExceptionThrown() throws JsonProcessingException {
+    void formatJsonResponse_fullResponseWithErrors_multipleContentsApiExceptionThrown() {
         final JsonNode jsonNode = JoystickMapper.readTree("{\"dev_test_001\":{\"data\":{\"config_name\":\"initial-test-config-dev-001\"}," +
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}," +
             "\"dev_test_002\":\"Some error occurred\"}");
@@ -106,7 +112,7 @@ class MultipleContentEndpointTest {
     }
 
     @Test
-    void formatJsonResponse_shortResponseWithoutErrors_shortResponseReturned() throws JsonProcessingException {
+    void formatJsonResponse_shortResponseWithoutErrors_shortResponseReturned() {
         final JsonNode jsonNode = JoystickMapper.readTree("{\"dev_test_001\":{\"data\":{\"config_name\":\"initial-test-config-dev-001\"}," +
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}," +
             "\"dev_test_002\":{\"data\":{\"config_name\":\"initial-test-config-dev-002\"}," +
@@ -121,7 +127,7 @@ class MultipleContentEndpointTest {
     }
 
     @Test
-    void formatJsonResponse_shortResponseWithErrors_multipleContentsApiExceptionThrown() throws JsonProcessingException {
+    void formatJsonResponse_shortResponseWithErrors_multipleContentsApiExceptionThrown() {
         final JsonNode jsonNode = JoystickMapper.readTree("{\"dev_test_001\":{\"data\":{\"config_name\":\"initial-test-config-dev-001\"}," +
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}," +
             "\"dev_test_002\":\"Some error occurred\"}");

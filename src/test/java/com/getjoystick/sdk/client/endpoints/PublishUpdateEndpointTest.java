@@ -2,6 +2,8 @@ package com.getjoystick.sdk.client.endpoints;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ApiBadRequestException;
 import com.getjoystick.sdk.errors.ConfigurationException;
 import com.getjoystick.sdk.models.PublishData;
@@ -134,6 +136,30 @@ class PublishUpdateEndpointTest {
         final ConfigurationException error = assertThrows(ConfigurationException.class,
             () -> new PublishUpdateEndpoint(null,""));
         assertEquals("Content ID is not provided.", error.getMessage());
+    }
+
+    @Test
+    void getContentHash_exceptionIsThrown() {
+        PublishData data = PublishData.builder()
+            .setDescription("test 1")
+            .setContent(ImmutableMap.of())
+            .build();
+        final UnsupportedOperationException error = assertThrows(UnsupportedOperationException.class,
+            () -> new PublishUpdateEndpoint(data,"12345")
+                .getContentHash(ClientConfig.builder().setApiKey("API_KEY").build()));
+        assertEquals("Method is not implemented", error.getMessage());
+    }
+
+    @Test
+    void formatJsonResponse_exceptionIsThrown() {
+        PublishData data = PublishData.builder()
+            .setDescription("test 1")
+            .setContent(ImmutableMap.of())
+            .build();
+        final UnsupportedOperationException error = assertThrows(UnsupportedOperationException.class,
+            () -> new PublishUpdateEndpoint(data,"12345")
+                .formatJsonResponse(new TextNode("some text")));
+        assertEquals("method is not implemented", error.getMessage());
     }
 
 }

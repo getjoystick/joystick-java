@@ -18,8 +18,4 @@ public class JoystickContentOptions {
         return refresh;
     }
 
-    public void setRefresh(final boolean refresh) {
-        this.refresh = refresh;
-    }
-
 }
