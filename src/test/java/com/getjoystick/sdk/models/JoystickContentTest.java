@@ -15,9 +15,9 @@ class JoystickContentTest {
     void testGet() {
         final JoystickContent content =
             new JoystickContent(JoystickMapper.readTree("{\"speed\":20,\"name\":\"Turbo\",\"size\":245,\"price\":22.99}"));
-        JoystickContent zeroNode =  content.get(0);
-        JoystickContent nameNode =  content.get("name");
-        assertEquals(new JoystickContent(new TextNode("Turbo")),
+        JsonNode zeroNode =  content.get(0);
+        JsonNode nameNode =  content.get("name");
+        assertEquals(new TextNode("Turbo"),
             nameNode);
         assertNull(zeroNode);
     }

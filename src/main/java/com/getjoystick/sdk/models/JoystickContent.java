@@ -21,14 +21,12 @@ public class JoystickContent {
         return content;
     }
 
-    public JoystickContent get(final String nodeName) {
-        final JsonNode childNode = content.get(nodeName);
-        return childNode == null ? null : new JoystickContent(childNode);
+    public JsonNode get(final String nodeName) {
+        return content.get(nodeName);
     }
 
-    public JoystickContent get(final int index) {
-        final JsonNode childNode = content.get(index);
-        return childNode == null ? null : new JoystickContent(childNode);
+    public JsonNode get(final int index) {
+        return content.get(index);
     }
     @Override
     public String toString() {
