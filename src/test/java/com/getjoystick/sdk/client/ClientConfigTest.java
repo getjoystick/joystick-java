@@ -1,6 +1,8 @@
 package com.getjoystick.sdk.client;
 
+import com.getjoystick.sdk.cache.impl.ApiCacheLRU;
 import com.getjoystick.sdk.errors.ConfigurationException;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -97,4 +99,109 @@ class ClientConfigTest {
         assertFalse(cfg.isSerialized());
     }
 
+    @Test
+    void testHashCode() {
+        final ApiCacheLRU cacheLRU = new ApiCacheLRU<>();
+        final ClientConfig config = ClientConfig.builder()
+            .setApiKey(API_KEY)
+            .setUserId("userId")
+            .setSemVer("0.0.1")
+            .setParams(ImmutableMap.of(1L, 2L))
+            .setCacheTTL(1000)
+            .setSerialized(false)
+            .setCache(cacheLRU)
+            .build();
+        final ClientConfig duplicateConfig = ClientConfig.builder()
+            .setApiKey(API_KEY)
+            .setUserId("userId")
+            .setSemVer("0.0.1")
+            .setParams(ImmutableMap.of(1L, 2L))
+            .setCacheTTL(1000)
+            .setSerialized(false)
+            .setCache(cacheLRU)
+            .build();
+        assertEquals(duplicateConfig.hashCode(), config.hashCode());
+    }
+
+    @Test
+    void testEquals() {
+        final ApiCacheLRU cacheLRU = new ApiCacheLRU<>();
+        final ClientConfig config = ClientConfig.builder()
+            .setApiKey(API_KEY)
+            .setUserId("userId")
+            .setSemVer("0.0.1")
+            .setParams(ImmutableMap.of(1L, 2L))
+            .setCacheTTL(1000)
+            .setSerialized(false)
+            .setCache(cacheLRU)
+            .build();
+        final ClientConfig duplicateConfig = ClientConfig.builder()
+            .setApiKey(API_KEY)
+            .setUserId("userId")
+            .setSemVer("0.0.1")
+            .setParams(ImmutableMap.of(1L, 2L))
+            .setCacheTTL(1000)
+            .setSerialized(false)
+            .setCache(cacheLRU)
+            .build();
+        final ClientConfig otherConfig = ClientConfig.builder()
+                .setApiKey(API_KEY)
+                .build();
+        assertTrue(config.equals(config));
+        assertTrue(config.equals(duplicateConfig));
+        assertFalse(config.equals(otherConfig));
+        assertFalse(config.equals(null));
+
+        ClientConfig configWithNullValues = ClientConfig.builder()
+            .setApiKey(API_KEY)
+            .setUserId("userId")
+            .setSemVer("0.0.1")
+            .setParams(ImmutableMap.of(1L, 2L))
+            .setCacheTTL(1000)
+            .setSerialized(false)
+            .setCache(null)
+            .build();
+        assertFalse(configWithNullValues.equals(config));
+        assertFalse(config.equals(configWithNullValues));
+        configWithNullValues = ClientConfig.builder()
+            .setApiKey(API_KEY)
+            .setUserId("userId")
+            .setSemVer("0.0.1")
+            .setParams(null)
+            .setCacheTTL(1000)
+            .setSerialized(false)
+            .build();
+        assertFalse(configWithNullValues.equals(config));
+        assertFalse(config.equals(configWithNullValues));
+        configWithNullValues = ClientConfig.builder()
+            .setApiKey(API_KEY)
+            .setUserId("userId")
+            .setSemVer(null)
+            .setCacheTTL(1000)
+            .setSerialized(false)
+            .build();
+        assertFalse(configWithNullValues.equals(config));
+        assertFalse(config.equals(configWithNullValues));
+        configWithNullValues = ClientConfig.builder()
+            .setApiKey(API_KEY)
+            .setUserId(null)
+            .setCacheTTL(1000)
+            .setSerialized(false)
+            .build();
+        assertFalse(configWithNullValues.equals(config));
+        assertFalse(config.equals(configWithNullValues));
+        configWithNullValues = ClientConfig.builder()
+            .setApiKey(API_KEY)
+            .setCacheTTL(1000)
+            .setSerialized(true)
+            .build();
+        assertFalse(configWithNullValues.equals(config));
+        assertFalse(config.equals(configWithNullValues));
+        configWithNullValues = ClientConfig.builder()
+            .setApiKey(API_KEY)
+            .setCacheTTL(0)
+            .build();
+        assertFalse(configWithNullValues.equals(config));
+        assertFalse(config.equals(configWithNullValues));
+    }
 }

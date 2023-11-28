@@ -35,7 +35,7 @@ public class JoystickFullContent<T> {
         if(isSerialized) {
             this.data = (T) removeTrailingQuotes(jsonContent.get(DATA_FIELD).toString());
         } else {
-            this.data = (T) new JoystickContent(jsonContent.get(DATA_FIELD));
+            this.data = (T) jsonContent.get(DATA_FIELD);
         }
         this.dataString = content;
         this.meta = JoystickMapper.treeToValue(jsonContent.get(META_FIELD), JoystickMeta.class);
@@ -46,7 +46,7 @@ public class JoystickFullContent<T> {
         if(isSerialized) {
             this.data = (T) removeTrailingQuotes(jsonContent.get(DATA_FIELD).toString());
         } else {
-            this.data = (T) new JoystickContent(jsonContent.get(DATA_FIELD));
+            this.data = (T) jsonContent.get(DATA_FIELD);
         }
         this.dataString = removeTrailingQuotes(jsonContent.toString());
         this.meta = JoystickMapper.treeToValue(jsonContent.get(META_FIELD), JoystickMeta.class);

@@ -68,34 +68,6 @@ public class ClientConfig {
         return this.cache;
     }
 
-    public void setUserId(final String userId) {
-        this.userId = userId;
-    }
-
-    public void setApiKey(final String apiKey) {
-        this.apiKey = apiKey;
-    }
-
-    public void setSemVer(final String semVer) {
-        this.semVer = semVer;
-    }
-
-    public void setParams(final Map<Object, Object> params) {
-        this.params = params;
-    }
-
-    public void setCacheTTL(final int cacheTTL) {
-        this.cacheTTL = cacheTTL;
-    }
-
-    public void setSerialized(final boolean serialized) {
-        this.serialized = serialized;
-    }
-
-    public void setCache(final ApiCache<String, String> cache) {
-        this.cache = cache;
-    }
-
     @Override
     public boolean equals(final Object object) {
         if (object == this) {
@@ -104,7 +76,19 @@ public class ClientConfig {
         if (!(object instanceof ClientConfig)) {
             return false;
         }
+
         final ClientConfig other = (ClientConfig)object;
+
+        final Object thisApiKey = this.getApiKey();
+        final Object otherApiKey = other.getApiKey();
+        if (thisApiKey == null) {
+            if (otherApiKey != null) {
+                return false;
+            }
+        } else if (!thisApiKey.equals(otherApiKey)) {
+            return false;
+        }
+
         if (this.getCacheTTL() != other.getCacheTTL()) {
             return false;
         }
@@ -119,16 +103,6 @@ public class ClientConfig {
                 return  false;
             }
         } else if (!thisUserId.equals(otherUserId)) {
-            return false;
-        }
-
-        final Object thisApiKey = this.getApiKey();
-        final Object otherApiKey = other.getApiKey();
-        if (thisApiKey == null) {
-            if (otherApiKey != null) {
-                return false;
-            }
-        } else if (!thisApiKey.equals(otherApiKey)) {
             return false;
         }
 

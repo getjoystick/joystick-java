@@ -11,7 +11,6 @@ import com.getjoystick.sdk.client.endpoints.MultipleContentEndpoint;
 import com.getjoystick.sdk.client.endpoints.SingleContentEndpoint;
 import com.getjoystick.sdk.errors.ApiUnknownException;
 import com.getjoystick.sdk.models.JoystickContentOptions;
-import com.getjoystick.sdk.models.JoystickContent;
 import com.getjoystick.sdk.models.JoystickFullContent;
 import com.getjoystick.sdk.models.PublishData;
 import com.getjoystick.sdk.models.ResponseType;
@@ -73,7 +72,7 @@ public class ClientImpl implements Client {
      *                             any unexpected {@link IOException} is thrown.
      */
     @Override
-    public JoystickContent getContent(final String contentId) {
+    public JsonNode getContent(final String contentId) {
         return getContent(contentId, new JoystickContentOptions(false));
     }
 
@@ -95,7 +94,7 @@ public class ClientImpl implements Client {
      * @return Object representing full Joystick content
      */
     @Override
-    public JoystickFullContent<JoystickContent> getFullContent(final String contentId) {
+    public JoystickFullContent<JsonNode> getFullContent(final String contentId) {
         return getFullContent(contentId, new JoystickContentOptions(false));
     }
 
@@ -117,7 +116,7 @@ public class ClientImpl implements Client {
      * @return map of configuration data by content id
      */
     @Override
-    public Map<String, JoystickContent> getContents(final Collection<String> contentIds) {
+    public Map<String, JsonNode> getContents(final Collection<String> contentIds) {
         return getContents(contentIds, new JoystickContentOptions(false));
     }
 
@@ -140,7 +139,7 @@ public class ClientImpl implements Client {
      * @return map of full configuration data by content id
      */
     @Override
-    public Map<String, JoystickFullContent<JoystickContent>> getFullContents(final Collection<String> contentIds) {
+    public Map<String, JoystickFullContent<JsonNode>> getFullContents(final Collection<String> contentIds) {
         return getFullContents(contentIds, new JoystickContentOptions(false));
     }
 
@@ -165,11 +164,10 @@ public class ClientImpl implements Client {
      *                             any unexpected {@link IOException} is thrown.
      */
     @Override
-    public JoystickContent getContent(final String contentId, final JoystickContentOptions contentOptions) {
+    public JsonNode getContent(final String contentId, final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId);
         final String singleContent =  getContentsAsString(singleEndpoint, contentOptions);
-        final JsonNode jsonContent = JoystickMapper.readTree(singleContent);
-        return new JoystickContent(jsonContent);
+        return JoystickMapper.readTree(singleContent);
     }
 
     /**
@@ -194,7 +192,7 @@ public class ClientImpl implements Client {
      * @return Object representing full Joystick content
      */
     @Override
-    public JoystickFullContent<JoystickContent> getFullContent(final String contentId,
+    public JoystickFullContent<JsonNode> getFullContent(final String contentId,
                                                      final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId)
             .setFullResponse(true);
@@ -227,14 +225,14 @@ public class ClientImpl implements Client {
      * @return map of configuration data by content id
      */
     @Override
-    public Map<String, JoystickContent> getContents(final Collection<String> contentIds,
+    public Map<String, JsonNode> getContents(final Collection<String> contentIds,
                                                     final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds);
         final String content =  getContentsAsString(multiEndpoint, contentOptions);
         final JsonNode jsonNode = JoystickMapper.readTree(content);
-        final Map<String, JoystickContent> contentMap = new HashMap<>();
+        final Map<String, JsonNode> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry ->
-            contentMap.put(nodeEntry.getKey(), new JoystickContent(nodeEntry.getValue()))
+            contentMap.put(nodeEntry.getKey(), nodeEntry.getValue())
         );
         return contentMap;
     }
@@ -270,13 +268,13 @@ public class ClientImpl implements Client {
      * @return map of full configuration data by content id
      */
     @Override
-    public Map<String, JoystickFullContent<JoystickContent>> getFullContents(final Collection<String> contentIds,
+    public Map<String, JoystickFullContent<JsonNode>> getFullContents(final Collection<String> contentIds,
                                                                 final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds)
             .setFullResponse(true);
         final String content =  getContentsAsString(multiEndpoint, contentOptions);
         final JsonNode jsonNode = JoystickMapper.readTree(content);
-        final Map<String, JoystickFullContent<JoystickContent>> contentMap = new HashMap<>();
+        final Map<String, JoystickFullContent<JsonNode>> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry -> {
             final JsonNode jsonContent = nodeEntry.getValue();
             contentMap.put(nodeEntry.getKey(),

@@ -1,10 +1,10 @@
 package com.getjoystick.examples.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.getjoystick.examples.model.ClientConfigDto;
 import com.getjoystick.sdk.Joystick;
 import com.getjoystick.sdk.client.Client;
 import com.getjoystick.sdk.client.ClientConfig;
-import com.getjoystick.sdk.models.JoystickContent;
 import com.getjoystick.sdk.models.JoystickFullContent;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +23,7 @@ public class GetMultiContentsController {
                               @RequestParam final List<String> contentIds) {
         ClientConfig config = ClientConfig.builder().setApiKey(apiKey).build();
         Client client = Joystick.create(config);
-        Map<String, JoystickContent> contentsMap = client.getContents(contentIds);
+        Map<String, JsonNode> contentsMap = client.getContents(contentIds);
 
         return contentsMap.toString();
     }
@@ -40,7 +40,7 @@ public class GetMultiContentsController {
             .setSerialized(clientConfigDto.isSerialized())
             .build();
         Client client = Joystick.create(clientConfig);
-        Map<String, JoystickContent> contentsMap = client.getContents(contentIds);
+        Map<String, JsonNode> contentsMap = client.getContents(contentIds);
 
         return contentsMap.toString();
     }
@@ -57,7 +57,7 @@ public class GetMultiContentsController {
             .setSerialized(clientConfigDto.isSerialized())
             .build();
         Client client = Joystick.create(clientConfig);
-        Map<String, JoystickFullContent<JoystickContent>> contentsMap = client.getFullContents(contentIds);
+        Map<String, JoystickFullContent<JsonNode>> contentsMap = client.getFullContents(contentIds);
 
         return contentsMap.toString();
     }

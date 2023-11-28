@@ -12,7 +12,7 @@ class JoystickFullContentTest {
         final JoystickFullContent content =
             new JoystickFullContent("{\"data\":{\"level\":133,\"mode\":\"Hard\",\"age\":18,\"price\":33.99}," +
                 "\"hash\":\"e10325c5\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}", false);
-        assertEquals(-1245507023, content.hashCode());
+        assertEquals(-1245614934, content.hashCode());
     }
 
     @Test

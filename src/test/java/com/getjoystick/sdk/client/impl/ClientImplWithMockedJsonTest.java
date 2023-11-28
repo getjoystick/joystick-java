@@ -1,11 +1,13 @@
 package com.getjoystick.sdk.client.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.getjoystick.sdk.BaseTest;
 import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ApiBadRequestException;
-import com.getjoystick.sdk.models.JoystickContent;
 import com.getjoystick.sdk.models.JoystickFullContent;
+import com.getjoystick.sdk.util.JoystickMapper;
 import com.google.common.collect.ImmutableSet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -112,10 +114,10 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 .when(httpClient)
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
 
-            final JoystickContent content = new ClientImpl(ClientConfig.builder().setApiKey(API_KEY).build())
+            final JsonNode content = new ClientImpl(ClientConfig.builder().setApiKey(API_KEY).build())
                 .getContent(contentId);
 
-            final Map<String, ?> contentMap = content.asObject(Map.class);
+            final Map<String, ?> contentMap = JoystickMapper.treeToValue(content, Map.class);
             assertNotNull(contentMap);
             assertEquals(2, contentMap.size());
             assertEquals("initial-test-config-dev-001", contentMap.get("config_name"));
@@ -155,11 +157,11 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 .when(httpClient)
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
 
-            final JoystickContent joystickContent = new ClientImpl(
+            final JsonNode joystickContent = new ClientImpl(
                 ClientConfig.builder().setApiKey(API_KEY).setSerialized(true).build())
                 .getContent(contentId);
 
-            final String content = joystickContent.asJson().toString();
+            final String content = joystickContent.toString();
             assertNotNull(content);
             assertEquals("\"{\\\"config_name\\\":\\\"initial-test-config-dev-001\\\",\\\"from_location\\\":\\\"unit-test\\\"}\"",
                 content);
@@ -284,13 +286,18 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 .when(httpClient)
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
 
-            final JoystickFullContent<JoystickContent> fullContent = new ClientImpl(
+            final JoystickFullContent<JsonNode> fullContent = new ClientImpl(
                 ClientConfig.builder().setApiKey(API_KEY).setSerialized(true).build())
                 .getFullContent(contentId);
 
             assertNotNull(fullContent);
-            assertEquals("{\\\"store\\\":{\\\"book\\\":[{\\\"category\\\":\\\"Version2\\\",\\\"author\\\":\\\"Nigel Rees\\\",\\\"title\\\":\\\"Sayings of the Century\\\",\\\"price\\\":8.95},{\\\"category\\\":\\\"fiction\\\",\\\"author\\\":\\\"Evelyn Waugh\\\",\\\"title\\\":\\\"Sword of Honour\\\",\\\"price\\\":12.99},{\\\"category\\\":\\\"fiction\\\",\\\"author\\\":\\\"J. R. R. Tolkien\\\",\\\"title\\\":\\\"The Lord of the Rings\\\",\\\"isbn\\\":\\\"0-395-19395-8\\\",\\\"price\\\":22.99}],\\\"bicycle\\\":{\\\"color\\\":\\\"red\\\",\\\"price\\\":19.95}}}",
-                fullContent.getData().toString());
+            JoystickMapper.readTree("{\"speed\":20,\"name\":\"Turbo\",\"size\":245,\"price\":22.99}");
+            assertEquals(new TextNode("{\"store\":{\"book\":[{\"category\":\"Version2\",\"author\":" +
+                        "\"Nigel Rees\",\"title\":\"Sayings of the Century\",\"price\":8.95},{\"category\":\"fiction\"," +
+                        "\"author\":\"Evelyn Waugh\",\"title\":\"Sword of Honour\",\"price\":12.99},{\"category\":" +
+                        "\"fiction\",\"author\":\"J. R. R. Tolkien\",\"title\":\"The Lord of the Rings\",\"isbn\":" +
+                        "\"0-395-19395-8\",\"price\":22.99}],\"bicycle\":{\"color\":\"red\",\"price\":19.95}}}"),
+                fullContent.getData());
             // Check request values
             checkRequiredHeaders(httpClientBuilder, API_KEY);
             checkRequestURL(httpClient, "POST", "/api/v1/config/id1/dynamic?responseType=serialized");
@@ -325,7 +332,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 .when(httpClient)
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
 
-            final Map<String, JoystickFullContent<JoystickContent>> fullContents = new ClientImpl(
+            final Map<String, JoystickFullContent<JsonNode>> fullContents = new ClientImpl(
                 ClientConfig.builder().setApiKey(API_KEY).setSerialized(true).build())
                 .getFullContents(ImmutableSet.of("race_config", "horror_config"));
 
@@ -368,7 +375,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 .when(httpClient)
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
 
-            final Map<String, JoystickContent> contentMap = new ClientImpl(
+            final Map<String, JsonNode> contentMap = new ClientImpl(
                 ClientConfig.builder().setApiKey(API_KEY).setSerialized(true).build())
                 .getContents(ImmutableSet.of("race_config", "horror_config"));
 

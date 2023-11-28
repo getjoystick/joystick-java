@@ -1,8 +1,8 @@
 package com.getjoystick.sdk.client;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.getjoystick.sdk.errors.ApiUnknownException;
 import com.getjoystick.sdk.models.JoystickContentOptions;
-import com.getjoystick.sdk.models.JoystickContent;
 import com.getjoystick.sdk.models.JoystickFullContent;
 import com.getjoystick.sdk.models.PublishData;
 import com.getjoystick.sdk.models.ResponseType;
@@ -26,7 +26,7 @@ public interface Client extends Closeable {
      * @throws ApiUnknownException if the response body does not contain valid JSON or
      *                             any unexpected {@link IOException} is thrown.
      */
-    JoystickContent getContent(String contentId);
+    JsonNode getContent(String contentId);
 
     /**
      * Get serialized content from Joystick API by contentId.
@@ -42,7 +42,7 @@ public interface Client extends Closeable {
      * @param contentId content id in String format
      * @return Object representing full Joystick content
      */
-    JoystickFullContent<JoystickContent> getFullContent(String contentId);
+    JoystickFullContent<JsonNode> getFullContent(String contentId);
 
     /**
      * Get full content, including meta and hash, from Joystick API by contentId. Config data is serialized.
@@ -58,7 +58,7 @@ public interface Client extends Closeable {
      * @param contentIds collection of content ids
      * @return map of configuration data by content id
      */
-    Map<String, JoystickContent> getContents(Collection<String> contentIds);
+    Map<String, JsonNode> getContents(Collection<String> contentIds);
 
     /**
      * Get map of serialized configurations for multiple content ids
@@ -74,7 +74,7 @@ public interface Client extends Closeable {
      * @param contentIds collection of content ids
      * @return map of full configuration data by content id
      */
-    Map<String, JoystickFullContent<JoystickContent>> getFullContents(Collection<String> contentIds);
+    Map<String, JoystickFullContent<JsonNode>> getFullContents(Collection<String> contentIds);
 
     /**
      * Get map of configurations for multiple content ids
@@ -93,7 +93,7 @@ public interface Client extends Closeable {
      * @throws ApiUnknownException if the response body does not contain valid JSON or
      *                             any unexpected {@link IOException} is thrown.
      */
-    JoystickContent getContent(String contentId, JoystickContentOptions contentOptions);
+    JsonNode getContent(String contentId, JoystickContentOptions contentOptions);
 
     /**
      * Get serialized content from Joystick API by contentId.
@@ -111,7 +111,7 @@ public interface Client extends Closeable {
      * @return Object representing full Joystick content
      * @param contentOptions optional parameters for getting Joystick content
      */
-    JoystickFullContent<JoystickContent> getFullContent(String contentId, JoystickContentOptions contentOptions);
+    JoystickFullContent<JsonNode> getFullContent(String contentId, JoystickContentOptions contentOptions);
 
     /**
      * Get full content, including meta and hash, from Joystick API by contentId. Config data is serialized.
@@ -129,7 +129,7 @@ public interface Client extends Closeable {
      * @param contentOptions optional parameters for getting Joystick content
      * @return map of configuration data by content id
      */
-    Map<String, JoystickContent> getContents(Collection<String> contentIds, JoystickContentOptions contentOptions);
+    Map<String, JsonNode> getContents(Collection<String> contentIds, JoystickContentOptions contentOptions);
 
     /**
      * Get map of serialized configurations for multiple content ids
@@ -147,7 +147,7 @@ public interface Client extends Closeable {
      * @param contentOptions optional parameters for getting Joystick content
      * @return map of full configuration data by content id
      */
-    Map<String, JoystickFullContent<JoystickContent>> getFullContents(Collection<String> contentIds,
+    Map<String, JoystickFullContent<JsonNode>> getFullContents(Collection<String> contentIds,
                                                          JoystickContentOptions contentOptions);
 
     /**
