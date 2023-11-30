@@ -7,7 +7,7 @@ import com.getjoystick.sdk.BaseTest;
 import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ApiBadRequestException;
 import com.getjoystick.sdk.models.JoystickFullContent;
-import com.getjoystick.sdk.util.JoystickMapper;
+import com.getjoystick.sdk.util.JoystickUtil;
 import com.google.common.collect.ImmutableSet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -117,7 +117,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
             final JsonNode content = new ClientImpl(ClientConfig.builder().setApiKey(API_KEY).build())
                 .getContent(contentId);
 
-            final Map<String, ?> contentMap = JoystickMapper.treeToValue(content, Map.class);
+            final Map<String, ?> contentMap = JoystickUtil.treeToValue(content, Map.class);
             assertNotNull(contentMap);
             assertEquals(2, contentMap.size());
             assertEquals("initial-test-config-dev-001", contentMap.get("config_name"));
@@ -291,7 +291,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 .getFullContent(contentId);
 
             assertNotNull(fullContent);
-            JoystickMapper.readTree("{\"speed\":20,\"name\":\"Turbo\",\"size\":245,\"price\":22.99}");
+            JoystickUtil.readTree("{\"speed\":20,\"name\":\"Turbo\",\"size\":245,\"price\":22.99}");
             assertEquals(new TextNode("{\"store\":{\"book\":[{\"category\":\"Version2\",\"author\":" +
                         "\"Nigel Rees\",\"title\":\"Sayings of the Century\",\"price\":8.95},{\"category\":\"fiction\"," +
                         "\"author\":\"Evelyn Waugh\",\"title\":\"Sword of Honour\",\"price\":12.99},{\"category\":" +

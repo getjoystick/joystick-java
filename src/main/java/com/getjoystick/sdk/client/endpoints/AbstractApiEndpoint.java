@@ -6,7 +6,7 @@ import com.getjoystick.sdk.errors.ApiBadRequestException;
 import com.getjoystick.sdk.errors.ApiServerException;
 import com.getjoystick.sdk.errors.ApiUnknownException;
 import com.getjoystick.sdk.models.RequestBody;
-import com.getjoystick.sdk.util.JoystickMapper;
+import com.getjoystick.sdk.util.JoystickUtil;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.entity.HttpEntities;
 import org.apache.hc.core5.http.message.StatusLine;
@@ -47,7 +47,7 @@ public abstract class AbstractApiEndpoint {
                 throw new ApiUnknownException("Response body is empty");
             }
             try (InputStream inputStream = responseEntity.getContent()) {
-                return JoystickMapper.readTree(inputStream);
+                return JoystickUtil.readTree(inputStream);
             } catch (Exception exception) {
                 throw new ApiUnknownException("Response is not in JSON format", exception);
             }
@@ -78,7 +78,7 @@ public abstract class AbstractApiEndpoint {
 
     public HttpEntity prepareRequestEntity() {
         return HttpEntities.create(outputStream -> {
-            JoystickMapper.writeValue(outputStream,
+            JoystickUtil.writeValue(outputStream,
                 getRequestBody(
                     config.getUserId(),
                     config.getParams(),

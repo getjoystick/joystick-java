@@ -1,6 +1,6 @@
 package com.getjoystick.sdk.models;
 
-import com.getjoystick.sdk.util.JoystickMapper;
+import com.getjoystick.sdk.util.JoystickUtil;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,7 +24,7 @@ class JoystickFullContentTest {
             new JoystickFullContent("{\"data\":{\"level\":133,\"mode\":\"Hard\",\"age\":18,\"price\":33.99}," +
                 "\"hash\":\"e10325c5\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}", false);
         final JoystickFullContent otherContent =
-            new JoystickFullContent(JoystickMapper.readTree("{\"data\":{\"level\":133,\"mode\":\"Hard\"," +
+            new JoystickFullContent(JoystickUtil.readTree("{\"data\":{\"level\":133,\"mode\":\"Hard\"," +
                 "\"age\":18,\"price\":11.11}," +
                 "\"hash\":\"e10325c5\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}"),
                 "{\"data\":{\"level\":133,\"mode\":\"Hard\",\"age\":18,\"price\":11.11}," +

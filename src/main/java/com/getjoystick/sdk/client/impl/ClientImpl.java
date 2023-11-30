@@ -14,7 +14,7 @@ import com.getjoystick.sdk.models.JoystickContentOptions;
 import com.getjoystick.sdk.models.JoystickFullContent;
 import com.getjoystick.sdk.models.PublishData;
 import com.getjoystick.sdk.models.ResponseType;
-import com.getjoystick.sdk.util.JoystickMapper;
+import com.getjoystick.sdk.util.JoystickUtil;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.getjoystick.sdk.util.JoystickMapper.removeTrailingQuotes;
+import static com.getjoystick.sdk.util.JoystickUtil.removeTrailingQuotes;
 
 /**
  * Check migration guide <a href="https://hc.apache.org/httpcomponents-client-5.2.x/migration-guide/index.html">...</a>
@@ -167,7 +167,7 @@ public class ClientImpl implements Client {
     public JsonNode getContent(final String contentId, final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint singleEndpoint = new SingleContentEndpoint(config, contentId);
         final String singleContent =  getContentsAsString(singleEndpoint, contentOptions);
-        return JoystickMapper.readTree(singleContent);
+        return JoystickUtil.readTree(singleContent);
     }
 
     /**
@@ -229,7 +229,7 @@ public class ClientImpl implements Client {
                                                     final JoystickContentOptions contentOptions) {
         final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds);
         final String content =  getContentsAsString(multiEndpoint, contentOptions);
-        final JsonNode jsonNode = JoystickMapper.readTree(content);
+        final JsonNode jsonNode = JoystickUtil.readTree(content);
         final Map<String, JsonNode> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry ->
             contentMap.put(nodeEntry.getKey(), nodeEntry.getValue())
@@ -250,7 +250,7 @@ public class ClientImpl implements Client {
         final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds)
             .setSerialized(true);
         final String content =  getContentsAsString(multiEndpoint, contentOptions);
-        final JsonNode jsonNode = JoystickMapper.readTree(content);
+        final JsonNode jsonNode = JoystickUtil.readTree(content);
         final Map<String, String> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry -> {
             final JsonNode nodeValue = nodeEntry.getValue();
@@ -273,7 +273,7 @@ public class ClientImpl implements Client {
         final AbstractApiEndpoint multiEndpoint = new MultipleContentEndpoint(config, contentIds)
             .setFullResponse(true);
         final String content =  getContentsAsString(multiEndpoint, contentOptions);
-        final JsonNode jsonNode = JoystickMapper.readTree(content);
+        final JsonNode jsonNode = JoystickUtil.readTree(content);
         final Map<String, JoystickFullContent<JsonNode>> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry -> {
             final JsonNode jsonContent = nodeEntry.getValue();
@@ -297,7 +297,7 @@ public class ClientImpl implements Client {
             .setSerialized(true)
             .setFullResponse(true);
         final String content =  getContentsAsString(multiEndpoint, contentOptions);
-        final JsonNode jsonNode = JoystickMapper.readTree(content);
+        final JsonNode jsonNode = JoystickUtil.readTree(content);
         final Map<String, JoystickFullContent<String>> contentMap = new HashMap<>();
         jsonNode.fields().forEachRemaining(nodeEntry -> {
             final JsonNode jsonContent = nodeEntry.getValue();

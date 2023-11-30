@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ConfigurationException;
 import com.getjoystick.sdk.models.PublishData;
-import com.getjoystick.sdk.util.JoystickMapper;
+import com.getjoystick.sdk.util.JoystickUtil;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
@@ -66,7 +66,7 @@ public class PublishUpdateEndpoint extends AbstractApiEndpoint {
     @Override
     public HttpEntity prepareRequestEntity() {
         return HttpEntities.create(outputStream -> {
-            JoystickMapper.writeValue(outputStream, data);
+            JoystickUtil.writeValue(outputStream, data);
             outputStream.flush();
         }, ContentType.APPLICATION_JSON);
     }

@@ -1,9 +1,9 @@
 package com.getjoystick.sdk.models;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.getjoystick.sdk.util.JoystickMapper;
+import com.getjoystick.sdk.util.JoystickUtil;
 
-import static com.getjoystick.sdk.util.JoystickMapper.removeTrailingQuotes;
+import static com.getjoystick.sdk.util.JoystickUtil.removeTrailingQuotes;
 
 public class JoystickFullContent<T> {
 
@@ -31,14 +31,14 @@ public class JoystickFullContent<T> {
     }
 
     public JoystickFullContent(final String content, final boolean isSerialized) {
-        final JsonNode jsonContent = JoystickMapper.readTree(content);
+        final JsonNode jsonContent = JoystickUtil.readTree(content);
         if(isSerialized) {
             this.data = (T) removeTrailingQuotes(jsonContent.get(DATA_FIELD).toString());
         } else {
             this.data = (T) jsonContent.get(DATA_FIELD);
         }
         this.dataString = content;
-        this.meta = JoystickMapper.treeToValue(jsonContent.get(META_FIELD), JoystickMeta.class);
+        this.meta = JoystickUtil.treeToValue(jsonContent.get(META_FIELD), JoystickMeta.class);
         this.hash = jsonContent.get(HASH_FIELD).asText();
     }
 
@@ -49,7 +49,7 @@ public class JoystickFullContent<T> {
             this.data = (T) jsonContent.get(DATA_FIELD);
         }
         this.dataString = removeTrailingQuotes(jsonContent.toString());
-        this.meta = JoystickMapper.treeToValue(jsonContent.get(META_FIELD), JoystickMeta.class);
+        this.meta = JoystickUtil.treeToValue(jsonContent.get(META_FIELD), JoystickMeta.class);
         this.hash = jsonContent.get(HASH_FIELD).asText();
     }
 

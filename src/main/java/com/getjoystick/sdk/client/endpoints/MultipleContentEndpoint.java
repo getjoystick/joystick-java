@@ -9,7 +9,7 @@ import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ConfigurationException;
 import com.getjoystick.sdk.errors.MultipleContentsApiException;
 import com.getjoystick.sdk.util.ApiCacheKeyUtil;
-import com.getjoystick.sdk.util.JoystickMapper;
+import com.getjoystick.sdk.util.JoystickUtil;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 
@@ -58,7 +58,7 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
             qParams.add(new BasicNameValuePair(PARAM_RESP_TYPE, "serialized"));
         }
         try {
-            qParams.add(new BasicNameValuePair(PARAM_CONTENT_IDS, JoystickMapper.writeValueAsString(contentIds)));
+            qParams.add(new BasicNameValuePair(PARAM_CONTENT_IDS, JoystickUtil.writeValueAsString(contentIds)));
         } catch (JsonProcessingException e) {
             throw new ConfigurationException("Not able to add contentIds to URL", e);
         }

@@ -5,7 +5,7 @@ import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ApiBadRequestException;
 import com.getjoystick.sdk.errors.ApiServerException;
 import com.getjoystick.sdk.errors.ApiUnknownException;
-import com.getjoystick.sdk.util.JoystickMapper;
+import com.getjoystick.sdk.util.JoystickUtil;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.hc.core5.http.ClassicHttpResponse;
@@ -29,7 +29,7 @@ class AbstractApiEndpointTest {
         final AbstractApiEndpoint apiEndpoint = new SingleContentEndpoint(CONFIG, "id1");
         HttpEntity requestEntity = apiEndpoint.prepareRequestEntity();
         assertEquals("application/json; charset=UTF-8", requestEntity.getContentType());
-        assertEquals("{\"p\":{},\"u\":\"\"}", JoystickMapper.readTree(requestEntity.getContent()).toString());
+        assertEquals("{\"p\":{},\"u\":\"\"}", JoystickUtil.readTree(requestEntity.getContent()).toString());
     }
 
     @Test
@@ -37,7 +37,7 @@ class AbstractApiEndpointTest {
         final AbstractApiEndpoint apiEndpoint = new MultipleContentEndpoint(CONFIG, ImmutableSet.of("id1", "id2"));
         HttpEntity requestEntity = apiEndpoint.prepareRequestEntity();
         assertEquals("application/json; charset=UTF-8", requestEntity.getContentType());
-        assertEquals("{\"p\":{},\"u\":\"\"}",JoystickMapper.readTree(requestEntity.getContent()).toString());
+        assertEquals("{\"p\":{},\"u\":\"\"}", JoystickUtil.readTree(requestEntity.getContent()).toString());
     }
 
     @Test
@@ -52,7 +52,7 @@ class AbstractApiEndpointTest {
         HttpEntity requestEntity = apiEndpoint.prepareRequestEntity();
         assertEquals("application/json; charset=UTF-8", requestEntity.getContentType());
         assertEquals("{\"p\":{\"key1\":\"value1\",\"k2\":\"v2\"},\"u\":\"bestUser\",\"v\":\"0.0.1\"}",
-            JoystickMapper.readTree(requestEntity.getContent()).toString());
+            JoystickUtil.readTree(requestEntity.getContent()).toString());
     }
 
     @Test

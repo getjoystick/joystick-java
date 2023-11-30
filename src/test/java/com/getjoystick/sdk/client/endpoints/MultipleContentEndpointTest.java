@@ -5,7 +5,7 @@ import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.errors.ConfigurationException;
 import com.getjoystick.sdk.errors.MultipleContentsApiException;
 import com.getjoystick.sdk.models.RequestBody;
-import com.getjoystick.sdk.util.JoystickMapper;
+import com.getjoystick.sdk.util.JoystickUtil;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import org.apache.hc.core5.http.NameValuePair;
@@ -83,7 +83,7 @@ class MultipleContentEndpointTest {
 
     @Test
     void formatJsonResponse_fullResponseWithoutErrors_fullResponseReturned() {
-        final JsonNode jsonNode = JoystickMapper.readTree("{\"dev_test_001\":{\"data\":{\"config_name\":\"initial-test-config-dev-001\"}," +
+        final JsonNode jsonNode = JoystickUtil.readTree("{\"dev_test_001\":{\"data\":{\"config_name\":\"initial-test-config-dev-001\"}," +
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}," +
             "\"dev_test_002\":{\"data\":{\"config_name\":\"initial-test-config-dev-002\"}," +
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}}");
@@ -97,14 +97,14 @@ class MultipleContentEndpointTest {
 
     @Test
     void formatJsonResponse_fullResponseWithErrors_multipleContentsApiExceptionThrown() {
-        final JsonNode jsonNode = JoystickMapper.readTree("{\"dev_test_001\":{\"data\":{\"config_name\":\"initial-test-config-dev-001\"}," +
+        final JsonNode jsonNode = JoystickUtil.readTree("{\"dev_test_001\":{\"data\":{\"config_name\":\"initial-test-config-dev-001\"}," +
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}," +
             "\"dev_test_002\":\"Some error occurred\"}");
 
         MultipleContentEndpoint multipleContent = new MultipleContentEndpoint(CONFIG, ImmutableSet.of("id1", "id2"))
             .setFullResponse(true);
 
-        final JsonNode resultErrorNode = JoystickMapper.readTree("{\"dev_test_002\":\"Some error occurred\"}");
+        final JsonNode resultErrorNode = JoystickUtil.readTree("{\"dev_test_002\":\"Some error occurred\"}");
         final MultipleContentsApiException error = assertThrows(MultipleContentsApiException.class,
             () -> multipleContent.formatJsonResponse(jsonNode));
         assertEquals( "Response from remote server contains errors:"
@@ -113,7 +113,7 @@ class MultipleContentEndpointTest {
 
     @Test
     void formatJsonResponse_shortResponseWithoutErrors_shortResponseReturned() {
-        final JsonNode jsonNode = JoystickMapper.readTree("{\"dev_test_001\":{\"data\":{\"config_name\":\"initial-test-config-dev-001\"}," +
+        final JsonNode jsonNode = JoystickUtil.readTree("{\"dev_test_001\":{\"data\":{\"config_name\":\"initial-test-config-dev-001\"}," +
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}," +
             "\"dev_test_002\":{\"data\":{\"config_name\":\"initial-test-config-dev-002\"}," +
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}}");
@@ -128,13 +128,13 @@ class MultipleContentEndpointTest {
 
     @Test
     void formatJsonResponse_shortResponseWithErrors_multipleContentsApiExceptionThrown() {
-        final JsonNode jsonNode = JoystickMapper.readTree("{\"dev_test_001\":{\"data\":{\"config_name\":\"initial-test-config-dev-001\"}," +
+        final JsonNode jsonNode = JoystickUtil.readTree("{\"dev_test_001\":{\"data\":{\"config_name\":\"initial-test-config-dev-001\"}," +
             "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}," +
             "\"dev_test_002\":\"Some error occurred\"}");
 
         MultipleContentEndpoint multipleContent = new MultipleContentEndpoint(CONFIG, ImmutableSet.of("id1", "id2"));
 
-        final JsonNode resultErrorNode = JoystickMapper.readTree("{\"dev_test_002\":\"Some error occurred\"}");
+        final JsonNode resultErrorNode = JoystickUtil.readTree("{\"dev_test_002\":\"Some error occurred\"}");
         final MultipleContentsApiException error = assertThrows(MultipleContentsApiException.class,
             () -> multipleContent.formatJsonResponse(jsonNode));
         assertEquals( "Response from remote server contains errors:"
