@@ -5,14 +5,33 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>Joystick SDK</name>
+    <description>Java Client for Joystick Remote Config</description>
+    <url>https://www.getjoystick.com/</url>
     <artifactId>joystick-sdk</artifactId>
     <groupId>com.getjoystick</groupId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Alina Fitsner</name>
+            <email>getjoystick@gmail.com</email>
+            <organization>Joystick</organization>
+            <organizationUrl>https://www.getjoystick.com/</organizationUrl>
+        </developer>
+    </developers>
 
     <scm>
         <connection>scm:git:https://github.com/getjoystick/joystick-java.git</connection>
         <developerConnection>scm:git:https://github.com/getjoystick/joystick-java.git</developerConnection>
-        <url>https://app.getjoystick.com/</url>
+        <url>https://github.com/getjoystick/joystick-java</url>
         <tag>HEAD</tag>
     </scm>
 
