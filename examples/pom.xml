@@ -6,7 +6,7 @@
     <name>Joystick Examples</name>
     <artifactId>joystick-examples</artifactId>
     <groupId>com.getjoystick</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -27,7 +27,7 @@
         <dependency>
             <groupId>com.getjoystick</groupId>
             <artifactId>joystick-sdk</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.1.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Explicitly specify jackson dependency versions to avoid conflicts between spring boot and joystick sdk -->

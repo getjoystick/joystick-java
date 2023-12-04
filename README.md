@@ -16,7 +16,7 @@ Before being able to use Joystick API in your project, you need to add maven dep
 <dependency>
     <groupId>com.getjoystick</groupId>
     <artifactId>joystick-sdk</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
 </dependency>
 ```
 
