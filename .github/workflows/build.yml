@@ -2,7 +2,9 @@
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
 name: "Joystick Java CI/CD Build"
 on:
-  [ push ]
+  push:
+    branches-ignore:
+      - feature/initial_client_impl
 jobs:
   build:
     runs-on: ubuntu-latest
