@@ -84,22 +84,6 @@ class ClientConfigTest {
     }
 
     @Test
-    @DisplayName("CCVD-06 - OK-1")
-    void testIfSerializedPropertyIsBooleanTrue() {
-        final ClientConfig cfg = ClientConfig.builder().setApiKey(API_KEY).setSerialized(true).build();
-        assertNotNull(cfg);
-        assertTrue(cfg.isSerialized());
-    }
-
-    @Test
-    @DisplayName("CCVD-06 - OK-2")
-    void testIfSerializedPropertyIsBooleanFalse() {
-        final ClientConfig cfg = ClientConfig.builder().setApiKey(API_KEY).build();
-        assertNotNull(cfg);
-        assertFalse(cfg.isSerialized());
-    }
-
-    @Test
     void testHashCode() {
         final ApiCacheLRU cacheLRU = new ApiCacheLRU<>();
         final ClientConfig config = ClientConfig.builder()
@@ -108,7 +92,6 @@ class ClientConfigTest {
             .setSemVer("0.0.1")
             .setParams(ImmutableMap.of(1L, 2L))
             .setCacheExpirationSeconds(1000)
-            .setSerialized(false)
             .setCache(cacheLRU)
             .build();
         final ClientConfig duplicateConfig = ClientConfig.builder()
@@ -117,7 +100,6 @@ class ClientConfigTest {
             .setSemVer("0.0.1")
             .setParams(ImmutableMap.of(1L, 2L))
             .setCacheExpirationSeconds(1000)
-            .setSerialized(false)
             .setCache(cacheLRU)
             .build();
         assertEquals(duplicateConfig.hashCode(), config.hashCode());
@@ -132,7 +114,6 @@ class ClientConfigTest {
             .setSemVer("0.0.1")
             .setParams(ImmutableMap.of(1L, 2L))
             .setCacheExpirationSeconds(1000)
-            .setSerialized(false)
             .setCache(cacheLRU)
             .build();
         final ClientConfig duplicateConfig = ClientConfig.builder()
@@ -141,7 +122,6 @@ class ClientConfigTest {
             .setSemVer("0.0.1")
             .setParams(ImmutableMap.of(1L, 2L))
             .setCacheExpirationSeconds(1000)
-            .setSerialized(false)
             .setCache(cacheLRU)
             .build();
         final ClientConfig otherConfig = ClientConfig.builder()
@@ -158,7 +138,6 @@ class ClientConfigTest {
             .setSemVer("0.0.1")
             .setParams(ImmutableMap.of(1L, 2L))
             .setCacheExpirationSeconds(1000)
-            .setSerialized(false)
             .setCache(null)
             .build();
         assertFalse(configWithNullValues.equals(config));
@@ -169,7 +148,6 @@ class ClientConfigTest {
             .setSemVer("0.0.1")
             .setParams(null)
             .setCacheExpirationSeconds(1000)
-            .setSerialized(false)
             .build();
         assertFalse(configWithNullValues.equals(config));
         assertFalse(config.equals(configWithNullValues));
@@ -178,7 +156,6 @@ class ClientConfigTest {
             .setUserId("userId")
             .setSemVer(null)
             .setCacheExpirationSeconds(1000)
-            .setSerialized(false)
             .build();
         assertFalse(configWithNullValues.equals(config));
         assertFalse(config.equals(configWithNullValues));
@@ -186,14 +163,12 @@ class ClientConfigTest {
             .setApiKey(API_KEY)
             .setUserId(null)
             .setCacheExpirationSeconds(1000)
-            .setSerialized(false)
             .build();
         assertFalse(configWithNullValues.equals(config));
         assertFalse(config.equals(configWithNullValues));
         configWithNullValues = ClientConfig.builder()
             .setApiKey(API_KEY)
             .setCacheExpirationSeconds(1000)
-            .setSerialized(true)
             .build();
         assertFalse(configWithNullValues.equals(config));
         assertFalse(config.equals(configWithNullValues));

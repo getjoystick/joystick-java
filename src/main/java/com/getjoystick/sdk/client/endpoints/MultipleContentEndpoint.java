@@ -47,7 +47,7 @@ public class MultipleContentEndpoint extends AbstractApiEndpoint {
     }
 
     private boolean isSerialized() {
-        return serialized || config.isSerialized();
+        return serialized;
     }
 
     @Override

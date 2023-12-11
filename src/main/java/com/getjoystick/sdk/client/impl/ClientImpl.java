@@ -360,7 +360,7 @@ public class ClientImpl implements Client {
     @Override
     public String getContentsAsString(final Collection<String> contentIds, final ResponseType responseType,
                                       final boolean fullResponse, final boolean refresh) {
-        final boolean isSerialized = responseType == ResponseType.SERIALIZED || config.isSerialized();
+        final boolean isSerialized = responseType == ResponseType.SERIALIZED;
         final AbstractApiEndpoint contentEndpoint = ApiEndpointFactory.build(config, contentIds, isSerialized, fullResponse);
         return getContentsAsString(contentEndpoint, new JoystickContentOptions(refresh));
     }

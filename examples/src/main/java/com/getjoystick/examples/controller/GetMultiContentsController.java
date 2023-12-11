@@ -37,7 +37,6 @@ public class GetMultiContentsController {
             .setUserId(clientConfigDto.getUserId())
             .setParams(clientConfigDto.getParams())
             .setSemVer(clientConfigDto.getSemVer())
-            .setSerialized(clientConfigDto.isSerialized())
             .build();
         Client client = Joystick.create(clientConfig);
         Map<String, JsonNode> contentsMap = client.getContents(contentIds);
@@ -54,7 +53,6 @@ public class GetMultiContentsController {
             .setUserId(clientConfigDto.getUserId())
             .setParams(clientConfigDto.getParams())
             .setSemVer(clientConfigDto.getSemVer())
-            .setSerialized(clientConfigDto.isSerialized())
             .build();
         Client client = Joystick.create(clientConfig);
         Map<String, JoystickFullContent<JsonNode>> contentsMap = client.getFullContents(contentIds);

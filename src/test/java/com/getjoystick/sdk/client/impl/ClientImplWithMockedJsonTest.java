@@ -129,50 +129,6 @@ class ClientImplWithMockedJsonTest extends BaseTest {
     }
 
     @Test
-    void getContent_validConfigWithSerializedParam_contentDataIsInSerializedForm() throws IOException {
-        String contentId = "id1";
-        try (MockedStatic<HttpClientBuilder> ignored = Mockito.mockStatic(HttpClientBuilder.class)) {
-            final HttpClientBuilder httpClientBuilder = mock(HttpClientBuilder.class);
-            when(HttpClientBuilder.create()).thenReturn(httpClientBuilder);
-
-            doReturn(httpClientBuilder).when(httpClientBuilder).setDefaultRequestConfig(any());
-            doReturn(httpClientBuilder).when(httpClientBuilder).setDefaultHeaders(any());
-
-            final CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
-            doReturn(httpClient).when(httpClientBuilder).build();
-
-            // Mock the response behaviour and call a real method
-            ClassicHttpResponse mockResponse = mock(ClassicHttpResponse.class);
-            doReturn(HttpStatus.SC_OK).when(mockResponse).getCode();
-            HttpEntity mockEntity = HttpEntities.create(
-                toString("/com/getjoystick/sdk/client/impl/SerializedResponseSample.json"),
-                ContentType.APPLICATION_JSON
-            );
-            doReturn(mockEntity).when(mockResponse).getEntity();
-
-            doAnswer(invocation -> {
-                HttpClientResponseHandler<?> handler = invocation.getArgument(1);
-                return handler.handleResponse(mockResponse);
-            })
-                .when(httpClient)
-                .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
-
-            final JsonNode joystickContent = new ClientImpl(
-                ClientConfig.builder().setApiKey(API_KEY).setSerialized(true).build())
-                .getContent(contentId);
-
-            final String content = joystickContent.toString();
-            assertNotNull(content);
-            assertEquals("\"{\\\"config_name\\\":\\\"initial-test-config-dev-001\\\",\\\"from_location\\\":\\\"unit-test\\\"}\"",
-                content);
-            // Check request values
-            checkRequiredHeaders(httpClientBuilder, API_KEY);
-            checkRequestURL(httpClient, "POST", "/api/v1/config/id1/dynamic?responseType=serialized");
-        }
-    }
-
-
-    @Test
     void getFullContentSerialized_validConfig_contentReturnedInSerializedForm() throws IOException {
         String contentId = "id1";
         try (MockedStatic<HttpClientBuilder> ignored = Mockito.mockStatic(HttpClientBuilder.class)) {
@@ -202,7 +158,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
 
             final JoystickFullContent<String> joystickContent = new ClientImpl(
-                ClientConfig.builder().setApiKey(API_KEY).setSerialized(true).build())
+                ClientConfig.builder().setApiKey(API_KEY).build())
                 .getFullContentSerialized(contentId);
 
             final String content = joystickContent.getData();
@@ -245,7 +201,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
 
             final String content = new ClientImpl(
-                ClientConfig.builder().setApiKey(API_KEY).setSerialized(true).build())
+                ClientConfig.builder().setApiKey(API_KEY).build())
                 .getContentSerialized(contentId);
 
             assertNotNull(content);
@@ -287,7 +243,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
 
             final JoystickFullContent<JsonNode> fullContent = new ClientImpl(
-                ClientConfig.builder().setApiKey(API_KEY).setSerialized(true).build())
+                ClientConfig.builder().setApiKey(API_KEY).build())
                 .getFullContent(contentId);
 
             assertNotNull(fullContent);
@@ -300,7 +256,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 fullContent.getData());
             // Check request values
             checkRequiredHeaders(httpClientBuilder, API_KEY);
-            checkRequestURL(httpClient, "POST", "/api/v1/config/id1/dynamic?responseType=serialized");
+            checkRequestURL(httpClient, "POST", "/api/v1/config/id1/dynamic");
         }
     }
 
@@ -333,7 +289,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
 
             final Map<String, JoystickFullContent<JsonNode>> fullContents = new ClientImpl(
-                ClientConfig.builder().setApiKey(API_KEY).setSerialized(true).build())
+                ClientConfig.builder().setApiKey(API_KEY).build())
                 .getFullContents(ImmutableSet.of("race_config", "horror_config"));
 
             assertNotNull(fullContents);
@@ -343,7 +299,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 fullContents.get("horror_config").toString());
             // Check request values
             checkRequiredHeaders(httpClientBuilder, API_KEY);
-            checkRequestURL(httpClient, "POST", "/api/v1/combine/?dynamic=true&responseType=serialized&c=%5B%22race_config%22%2C%22horror_config%22%5D");
+            checkRequestURL(httpClient, "POST", "/api/v1/combine/?dynamic=true&c=%5B%22race_config%22%2C%22horror_config%22%5D");
         }
     }
 
@@ -376,7 +332,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
 
             final Map<String, JsonNode> contentMap = new ClientImpl(
-                ClientConfig.builder().setApiKey(API_KEY).setSerialized(true).build())
+                ClientConfig.builder().setApiKey(API_KEY).build())
                 .getContents(ImmutableSet.of("race_config", "horror_config"));
 
             assertNotNull(contentMap);
@@ -386,7 +342,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 contentMap.get("horror_config").toString());
             // Check request values
             checkRequiredHeaders(httpClientBuilder, API_KEY);
-            checkRequestURL(httpClient, "POST", "/api/v1/combine/?dynamic=true&responseType=serialized&c=%5B%22race_config%22%2C%22horror_config%22%5D");
+            checkRequestURL(httpClient, "POST", "/api/v1/combine/?dynamic=true&c=%5B%22race_config%22%2C%22horror_config%22%5D");
         }
     }
 
@@ -419,7 +375,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
 
             final Map<String, String> contentMap = new ClientImpl(
-                ClientConfig.builder().setApiKey(API_KEY).setSerialized(true).build())
+                ClientConfig.builder().setApiKey(API_KEY).build())
                 .getContentsSerialized(ImmutableSet.of("race_config", "horror_config"));
 
             assertNotNull(contentMap);
@@ -462,7 +418,7 @@ class ClientImplWithMockedJsonTest extends BaseTest {
                 .execute(any(ClassicHttpRequest.class), any(HttpClientResponseHandler.class));
 
             final Map<String, JoystickFullContent<String>> contentMap = new ClientImpl(
-                ClientConfig.builder().setApiKey(API_KEY).setSerialized(true).build())
+                ClientConfig.builder().setApiKey(API_KEY).build())
                 .getFullContentsSerialized(ImmutableSet.of("race_config", "horror_config"));
 
             assertNotNull(contentMap);

@@ -34,7 +34,7 @@ public class SingleContentEndpoint extends AbstractApiEndpoint {
     }
 
     private boolean isSerialized() {
-        return serialized || config.isSerialized();
+        return serialized;
     }
 
     /**
