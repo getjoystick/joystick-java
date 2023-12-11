@@ -1,8 +1,8 @@
 name: Joystick Java CI/CD Release
 on:
-  push:
-    branches:
-      - feature/initial_client_impl
+  release:
+    types:
+      - released
 
 jobs:
   build:

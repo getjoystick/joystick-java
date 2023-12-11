@@ -4,7 +4,7 @@ name: "Joystick Java CI/CD Build"
 on:
   push:
     branches-ignore:
-      - feature/initial_client_impl
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
