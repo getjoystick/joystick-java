@@ -12,7 +12,7 @@ public class ClientConfig {
     private String apiKey;
     private String semVer;
     private Map<Object, Object> params;
-    private int cacheTTL;
+    private int cacheExpirationSeconds;
     private boolean serialized;
     private ApiCache<String, String> cache;
 
@@ -29,13 +29,13 @@ public class ClientConfig {
     }
 
     /* default */ ClientConfig(final String userId, final String apiKey, final String semVer,
-                               final Map<Object, Object> params, final int cacheTTL,
+                               final Map<Object, Object> params, final int cacheExpirationSeconds,
                                final boolean serialized, final ApiCache<String, String> cache) {
         this.userId = userId;
         this.apiKey = apiKey;
         this.semVer = semVer;
         this.params = params;
-        this.cacheTTL = cacheTTL;
+        this.cacheExpirationSeconds = cacheExpirationSeconds;
         this.serialized = serialized;
         this.cache = cache;
     }
@@ -56,8 +56,8 @@ public class ClientConfig {
         return this.params;
     }
 
-    public int getCacheTTL() {
-        return this.cacheTTL;
+    public int getCacheExpirationSeconds() {
+        return this.cacheExpirationSeconds;
     }
 
     public boolean isSerialized() {
@@ -89,7 +89,7 @@ public class ClientConfig {
             return false;
         }
 
-        if (this.getCacheTTL() != other.getCacheTTL()) {
+        if (this.getCacheExpirationSeconds() != other.getCacheExpirationSeconds()) {
             return false;
         }
         if (this.isSerialized() != other.isSerialized()) {
@@ -137,7 +137,7 @@ public class ClientConfig {
     @Override
     public int hashCode() {
         int result = 1;
-        result = result * 59 + this.getCacheTTL();
+        result = result * 59 + this.getCacheExpirationSeconds();
         result = result * 59 + (this.isSerialized() ? 79 : 97);
         final Object userIdObj = this.getUserId();
         result = result * 59 + (userIdObj == null ? 43 : userIdObj.hashCode());
@@ -154,7 +154,7 @@ public class ClientConfig {
 
     @Override
     public String toString() {
-        return "ClientConfig(userId=" + this.getUserId() + ", apiKey=" + this.getApiKey() + ", semVer=" + this.getSemVer() + ", params=" + this.getParams() + ", cacheTTL=" + this.getCacheTTL() + ", serialized=" + this.isSerialized() + ", cache=" + this.getCache() + ")";
+        return "ClientConfig(userId=" + this.getUserId() + ", apiKey=" + this.getApiKey() + ", semVer=" + this.getSemVer() + ", params=" + this.getParams() + ", cacheExpirationSeconds=" + this.getCacheExpirationSeconds() + ", serialized=" + this.isSerialized() + ", cache=" + this.getCache() + ")";
     }
 
     public static class ClientConfigBuilder {
@@ -164,7 +164,7 @@ public class ClientConfig {
         private String semVer;
         private boolean paramsSet;
         private Map<Object, Object> paramsValue;
-        private int cacheTTL;
+        private int cacheExpirationSeconds;
         private boolean serialized;
         private boolean cacheSet;
         private ApiCache<String, String> cacheValue;
@@ -194,8 +194,8 @@ public class ClientConfig {
             return this;
         }
 
-        public ClientConfigBuilder setCacheTTL(final int cacheTTL) {
-            this.cacheTTL = cacheTTL;
+        public ClientConfigBuilder setCacheExpirationSeconds(final int cacheTTL) {
+            this.cacheExpirationSeconds = cacheTTL;
             return this;
         }
 
@@ -226,12 +226,12 @@ public class ClientConfig {
                 thisCacheValue = ClientConfig.defaultCache();
             }
 
-            return new ClientConfig(thisUserIdValue, this.apiKey, this.semVer, thisParamsValue, this.cacheTTL, this.serialized, thisCacheValue);
+            return new ClientConfig(thisUserIdValue, this.apiKey, this.semVer, thisParamsValue, this.cacheExpirationSeconds, this.serialized, thisCacheValue);
         }
 
         @Override
         public String toString() {
-            return "ClientConfig.ClientConfigBuilder(userId$value=" + this.userIdValue + ", apiKey=" + this.apiKey + ", semVer=" + this.semVer + ", params$value=" + this.paramsValue + ", cacheTTL=" + this.cacheTTL + ", serialized=" + this.serialized + ", cache$value=" + this.cacheValue + ")";
+            return "ClientConfig.ClientConfigBuilder(userId$value=" + this.userIdValue + ", apiKey=" + this.apiKey + ", semVer=" + this.semVer + ", params$value=" + this.paramsValue + ", cacheExpirationSeconds=" + this.cacheExpirationSeconds + ", serialized=" + this.serialized + ", cache$value=" + this.cacheValue + ")";
         }
     }
 
@@ -249,7 +249,7 @@ public class ClientConfig {
             }
         }
 
-        private void validateCacheTTL(final int seconds) {
+        private void validateCacheExpiration(final int seconds) {
             if (seconds < 0) {
                 throw new ConfigurationException("Cache expiration time must be defined as seconds and must be positive.");
             }
@@ -262,9 +262,9 @@ public class ClientConfig {
         }
 
         @Override
-        public ClientConfigBuilder setCacheTTL(final int cacheTTL) {
-            this.validateCacheTTL(cacheTTL);
-            return super.setCacheTTL(cacheTTL);
+        public ClientConfigBuilder setCacheExpirationSeconds(final int cacheTTL) {
+            this.validateCacheExpiration(cacheTTL);
+            return super.setCacheExpirationSeconds(cacheTTL);
         }
         @Override
         public ClientConfig build() {
