@@ -97,7 +97,7 @@ public abstract class AbstractApiEndpoint {
         if (response.getCode() >= HttpStatus.SC_SERVER_ERROR) {
             throw new ApiServerException(new StatusLine(response).toString());
         }
-        if (response.getCode() >= HttpStatus.SC_BAD_REQUEST && response.getCode() < HttpStatus.SC_SERVER_ERROR) {
+        if (response.getCode() >= HttpStatus.SC_BAD_REQUEST) {
             throw new ApiBadRequestException(new StatusLine(response).toString());
         }
         if (response.getCode() != HttpStatus.SC_OK) {
