@@ -93,7 +93,7 @@ class ClientImplTest {
             final String response = "{\"data\":\"{\\\"config_name\\\":\\\"initial-test-config-dev-001\\\"}\"," +
                 "\"hash\":\"2f5aa20f\",\"meta\":{\"uid\":0,\"mod\":0,\"variants\":[],\"seg\":[]}}";
             final ApiCache<String, String> cache = new ApiCacheLRU<>();
-            cache.put("3630fd3bcb14a8b6c28d1b37a04cf09c84c404508459137f09e489db252a6f77", response);
+            cache.put("9cc2c024dfa829d84772d874d1281299e7e9cab22fcb99a72009a10c3053e1ac", response);
             final ClientConfig clientConfig = ClientConfig.builder().setApiKey(API_KEY).setCache(cache).build();
             final String result = new ClientImpl(clientConfig).getContentsAsString(ImmutableSet.of("id1"));
             assertEquals(response, result);

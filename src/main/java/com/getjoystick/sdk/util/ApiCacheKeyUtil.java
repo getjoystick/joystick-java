@@ -1,9 +1,11 @@
 package com.getjoystick.sdk.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.getjoystick.sdk.client.ClientConfig;
 import com.google.common.hash.Hashing;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
@@ -23,7 +25,7 @@ public final class ApiCacheKeyUtil {
      */
     public static String getHash(final ClientConfig config, final Collection<String> contentIds,
                                  final boolean serialized, final boolean fullResponse) {
-        final String contentIdsString = contentIds.stream().sorted().collect(Collectors.joining());
+        final String contentIdsString = contentIds.stream().sorted().collect(Collectors.joining(","));
         return getHash(config, contentIdsString, serialized, fullResponse);
     }
 
@@ -41,12 +43,22 @@ public final class ApiCacheKeyUtil {
                                  final boolean serialized, final boolean fullResponse) {
         final String key = config.getApiKey();
         final Map<Object, Object> props = new TreeMap<>(config.getParams());
-        final String propsKey = props.entrySet().stream()
-            .map(e -> e.getKey().toString() + e.getValue().toString())
-            .collect(Collectors.joining());
+        String propsString;
+        try {
+            propsString = JoystickUtil.writeValueAsString(props);
+        } catch (JsonProcessingException e) {
+            propsString = String.valueOf(props);
+        }
         final String semVer = config.getSemVer();
         final String userId = config.getUserId();
-        final String hashString = key + propsKey + semVer + userId + contentIdsString + serialized + fullResponse;
+        final String [] hashArray = {key, propsString, semVer, userId, contentIdsString,
+            Boolean.toString(serialized), Boolean.toString(fullResponse)};
+        String hashString;
+        try {
+            hashString = JoystickUtil.writeValueAsString(hashArray);
+        } catch (JsonProcessingException e) {
+            hashString = Arrays.toString(hashArray);
+        }
         return Hashing.sha256().hashString(hashString, StandardCharsets.UTF_8).toString();
     }
 
