@@ -19,7 +19,7 @@ class ApiCacheKeyUtilTest {
 
     @Test
     void testIfGetHashProvideTheSameKeyForMultipleInvocations() {
-        final String hash = "0a07b57cb7884396f88681a5ab0375a3fa857746bb7c9fd2b23c913d7e40eb30";
+        final String hash = "f46cdf1cd86d168a3488488db99e335bda2a090bed202c567c465da122add625";
         final ClientConfig cfg = ClientConfig.builder()
             .setApiKey(TEST_API_KEY)
             .setParams(
