@@ -14,23 +14,11 @@ Provided client is supporting Java 8+.
 
 Before using the Joystick Java SDK in your project, you need to add maven dependency:
 
-```sh
-<repositories>
-    <repository>
-        <id>nexus</id>
-        <name>nexus-snapshot</name>
-        <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-        <snapshots>
-            <enabled>true</enabled>
-        </snapshots>
-    </repository>
-</repositories>
-
-<!-- Joystick sdk -->
+```xml
 <dependency>
     <groupId>com.getjoystick</groupId>
     <artifactId>joystick-sdk</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 

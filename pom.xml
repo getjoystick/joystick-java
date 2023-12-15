@@ -9,7 +9,7 @@
     <url>https://www.getjoystick.com/</url>
     <artifactId>joystick-sdk</artifactId>
     <groupId>com.getjoystick</groupId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
 
     <licenses>
