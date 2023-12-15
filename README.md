@@ -1,15 +1,18 @@
 # Java Client for [Joystick Remote Config](https://www.getjoystick.com/)
 
-This is a library that simplifies communicating with the [Joystick API](https://docs.getjoystick.com/) for using remote configs with your Java project. Joystick is a modern remote config platform where you manage all of your configurable parameters. We are natively multi-environment, preserve your version history, have advanced work-flow & permissions management, and much more. Have one API to use for any JSON configs.
+This is a library that simplifies communicating with the [Joystick API](https://docs.getjoystick.com/) for using remote configurations with your Java project. With remote configurations, you can instantly change the behavior and appearance of your application without code changes.
+
+Joystick is a modern remote config platform where you manage all of your configurable parameters. We are natively multi-environment, preserve your version history, have advanced work-flow & permissions management, and much more. Have one API to use for any JSON configs.
 
 - [Full Developer Documentation](https://docs.getjoystick.com)
 - [Joystick Remote Config](https://getjoystick.com)
+- [Get a Free Sandbox Account Today](https://app.getjoystick.com/onboarding)
 
 Provided client is supporting Java 8+.
 
-## Configuration
+## Setup
 
-Before being able to use Joystick API in your project, you need to add maven dependency:
+Before using the Joystick Java SDK in your project, you need to add maven dependency:
 
 ```sh
 <repositories>
@@ -35,7 +38,7 @@ Before being able to use Joystick API in your project, you need to add maven dep
 
 Using Joystick to get remote configurations in your Java project is a breeze.
 
-```
+```java
 // Add imports
 import com.fasterxml.jackson.databind.JsonNode;
 import com.getjoystick.sdk.Joystick;
@@ -44,8 +47,11 @@ import com.getjoystick.sdk.client.ClientConfig;
 import com.getjoystick.sdk.util.JoystickMapper;
 .....
 
+// Get apiKey from environment variables java
+String joystickApiKey = System.getenv("JOYSTICK_API_KEY");
+
 // Initialize a client with a Joystick API Key
-ClientConfig config = ClientConfig.builder().setApiKey(apiKey).build();
+ClientConfig config = ClientConfig.builder().setApiKey(joystickApiKey).build();
 Client client = Joystick.create(config);
 
 // Request a single configuration as com.fasterxml.jackson.databind.JsonNode object
@@ -66,21 +72,38 @@ When creating the `Joystick` client, you can specify additional parameters which
 
 For more details see [API documentation](https://docs.getjoystick.com/api-reference/).
 
-```
+```java
 // Initializing a client with options
 ClientConfig config = ClientConfig.builder()
     .setApiKey("API_KEY")
-    .setUserId("userId")
-    .setSemVer("0.0.1")
-    .setParams(ImmutableMap.of("Country", "CN"))
+    .setUserId("userId") // Any string
+    .setSemVer("0.0.1") // String in the format of semantic versioning
+    .setParams(ImmutableMap.of("Location", "Earth")) // Key-value pairs of strings, numbers, or booleans
     .build();
 ```
+
+### Various Ways of Getting Configuration Content
+
+With our Joystick java SDK, you can easily get the configuration response in different ways.
+
+#### Single Configuration
+| Response | Config as JSON | Config as Serialized String |
+|----------|----------|----------|
+| Config content only |   `getContent`   |   `getContentSerialized`   |
+| Config content with additional meta data |   `getFullContent`   |   `getFullContentSerialized`   |
+
+
+#### Multiple Configurations
+| Response | Config as JSON | Config as Serialized String |
+|----------|----------|----------|
+| Multiple configs content only |   `getContents`   |   `getContentsSerialized`   |
+| Multiple configs content with additional meta data |   `getFullContents`   |   `getFullContentsSerialized`   |
 
 ### Error handling
 
 The client can raise different types of exceptions with the base class of `JoystickException`.
 
-```
+```java
 try {
     Map<String, JsonNode> contentsMap = client.getContents(
         ImmutableList.of("contentId1", "contentId2")
@@ -104,7 +127,7 @@ You can specify your own cache implementation by implementing the interface [Api
 
 To ignore the existing cache when requesting a config, pass this option as `true`.
 
-```
+```java
 JoystickContentOptions options = new JoystickContentOptions(true);
 
 JsonNode content = client.getContent("idOfMyContent", options);
