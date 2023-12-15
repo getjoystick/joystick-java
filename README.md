@@ -131,9 +131,9 @@ public class CaffeineCustomCache<K, V> implements ApiCache<K, V> {
 
 // Setting custom cache
 ClientConfig config = ClientConfig.builder()
-.setApiKey("API_KEY")
-.setCache(new CaffeineCustomCache<>())
-.build();
+    .setApiKey("API_KEY")
+    .setCache(new CaffeineCustomCache<>())
+    .build();
 ```
 
 Default cache expiration is set to 300 seconds. It can be changed during ClientConfig build
