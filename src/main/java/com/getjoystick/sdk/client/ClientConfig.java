@@ -23,6 +23,10 @@ public class ClientConfig {
         return Collections.emptyMap();
     }
 
+    private static ApiCache<String, String> defaultCache(final int cacheExpirationSeconds) {
+        return new ApiCacheLRU<>(cacheExpirationSeconds);
+    }
+
     private static ApiCache<String, String> defaultCache() {
         return new ApiCacheLRU<>();
     }
@@ -155,6 +159,7 @@ public class ClientConfig {
         private boolean paramsSet;
         private Map<Object, Object> paramsValue;
         private int cacheExpirationSeconds;
+        private boolean cacheExpirationSet;
         private boolean cacheSet;
         private ApiCache<String, String> cacheValue;
 
@@ -185,6 +190,7 @@ public class ClientConfig {
 
         public ClientConfigBuilder setCacheExpirationSeconds(final int cacheTTL) {
             this.cacheExpirationSeconds = cacheTTL;
+            this.cacheExpirationSet = true;
             return this;
         }
 
@@ -207,7 +213,11 @@ public class ClientConfig {
 
             ApiCache<String, String> thisCacheValue = this.cacheValue;
             if (!this.cacheSet) {
-                thisCacheValue = ClientConfig.defaultCache();
+                if(!this.cacheExpirationSet) {
+                    thisCacheValue = ClientConfig.defaultCache();
+                } else {
+                    thisCacheValue = ClientConfig.defaultCache(this.cacheExpirationSeconds);
+                }
             }
 
             return new ClientConfig(thisUserIdValue, this.apiKey, this.semVer, thisParamsValue,
