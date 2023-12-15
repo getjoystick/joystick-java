@@ -21,7 +21,7 @@ public class ApiCacheLRU<K, V> implements ApiCache<K, V> {
     /**
      * Default cache expiration time in seconds
      */
-    private static final int DEFAULT_EXPIRATION = 600;
+    private static final int DEFAULT_EXPIRATION = 300;
 
     /**
      * Field to store cache
