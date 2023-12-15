@@ -20,7 +20,7 @@ jobs:
       - name: "Set up JDK ${{ matrix.java-version }}" # https://aws.amazon.com/corretto/?filtered-posts.sort-by=item.additionalFields.createdDate&filtered-posts.sort-order=desc
         uses: actions/setup-java@v4
         with:
-          distribution: 'corretto'
+          distribution: 'zulu'
           java-version: ${{ matrix.java-version }}
           cache: 'maven'
 
