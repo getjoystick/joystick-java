@@ -122,6 +122,29 @@ catch (MultipleContentsApiException e) {
 By default, the client uses [ApiCacheLRU](./src/main/java/com/getjoystick/sdk/cache/impl/ApiCacheLRU.java), based on [guava in memory Cache](https://guava.dev/releases/21.0/api/docs/com/google/common/cache/Cache.html).
 
 You can specify your own cache implementation by implementing the interface [ApiCache](./src/main/java/com/getjoystick/sdk/cache/ApiCache.java).
+Sample code snippet could be found in [examples](./examples/src/main/java/com/getjoystick/examples/controller/CustomCacheController.java)
+
+```java
+public class CaffeineCustomCache<K, V> implements ApiCache<K, V> {
+    //implementation of base methods
+}
+
+// Setting custom cache
+ClientConfig config = ClientConfig.builder()
+.setApiKey("API_KEY")
+.setCache(new CaffeineCustomCache<>())
+.build();
+```
+
+Default cache expiration is set to 300 seconds. It can be changed during ClientConfig build
+
+```java
+// Setting CacheExpirationSeconds
+ClientConfig config = ClientConfig.builder()
+    .setApiKey("API_KEY")
+    .setCacheExpirationSeconds(600)
+    .build();
+```
 
 #### `Refresh` option
 
