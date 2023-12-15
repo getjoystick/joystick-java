@@ -1,0 +1,32 @@
+name: Joystick Java CI/CD Release
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 8 # https://aws.amazon.com/corretto/?filtered-posts.sort-by=item.additionalFields.createdDate&filtered-posts.sort-order=desc
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: 8
+          cache: 'maven'
+          server-id: ossrh # ID of the distributionManagement repository in the pom.xml file. Default is github
+          server-username: MAVEN_USERNAME # Environment variable name for the username for authentication to the Apache Maven repository. Default is GITHUB_ACTOR.
+          server-password: MAVEN_CENTRAL_TOKEN # Environment variable name for password or token for authentication to the Apache Maven repository. Default is GITHUB_TOKEN.
+          gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }} # GPG private key to import. Default is empty string.
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE # Environment variable name for the GPG private key passphrase. Default is GPG_PASSPHRASE.
+
+      - name: Publish to the Maven Central Repository
+        run: |
+          mvn --no-transfer-progress --batch-mode deploy -P release
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
