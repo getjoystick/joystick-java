@@ -2,7 +2,7 @@ name: Joystick Java CI/CD Release
 on:
   release:
     types:
-      - released
+      - published
 
 jobs:
   build:
